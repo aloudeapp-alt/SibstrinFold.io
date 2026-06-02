@@ -270,6 +270,19 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 
 .hhlog{position:fixed;bottom:200px;right:13px;background:rgba(8,6,3,.95);border:1px solid var(--gold-dk);border-radius:9px;padding:.45rem .6rem;max-width:185px;max-height:130px;overflow-y:auto;font-size:.58rem;color:var(--gold-dk);display:none;z-index:60;line-height:1.5;font-family:'Segoe UI',sans-serif}
 .hhlog.vis{display:block}
+/* stats card */
+.stats-hero{background:linear-gradient(160deg,#1a140a,#0f0c06);border:1px solid var(--gold);border-radius:14px;padding:1.2rem;text-align:center;margin-bottom:1rem;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.stats-av{width:72px;height:72px;border-radius:50%;padding:3px;background:var(--frame);margin:0 auto .5rem}
+.stats-av-in{width:100%;height:100%;border-radius:50%;background:#0a0805;display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden}
+.stats-av-in img{width:100%;height:100%;object-fit:cover}
+.stats-name{font-size:1.2rem;color:var(--txt);font-weight:700;font-family:'Georgia',serif}
+.stats-title{font-size:.7rem;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;font-family:'Segoe UI',sans-serif}
+.stat-card{background:#16120a;border:1px solid var(--gold-dk);border-radius:10px;padding:.7rem .8rem}
+.stat-lbl{font-size:.6rem;color:var(--txt-dim);text-transform:uppercase;letter-spacing:1px}
+.stat-val{font-size:1.15rem;color:var(--gold);font-weight:700;margin-top:3px}
+.stat-card.wide{grid-column:1/3}
+.lucky-cards{display:flex;gap:5px;justify-content:center;margin-top:5px}
 .toast{position:fixed;top:54px;left:50%;transform:translateX(-50%);background:#16120a;border:1px solid var(--gold);border-radius:9px;padding:.42rem 1rem;font-size:.8rem;color:var(--gold);z-index:500;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;font-family:'Segoe UI',sans-serif}
 .toast.show{opacity:1}
 .ver{position:fixed;bottom:6px;left:8px;z-index:999;pointer-events:none;font-size:.48rem;color:rgba(212,175,55,.25);letter-spacing:1.5px;text-transform:uppercase;font-family:monospace}
@@ -279,7 +292,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v57</div>
+<div class="ver">SIBSTRIN FOLD · v58</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -403,6 +416,12 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 <button class="ptt-fab" id="ptt-btn" title="Hold to Talk">🎙</button>
 <div class="ptt-indic" id="ptt-indicator"><div id="ptt-dot" style="width:8px;height:8px;border-radius:50%;background:var(--gold)"></div><span id="ptt-who" style="font-size:.75rem;color:var(--gold);font-weight:700;letter-spacing:1px">TALKING</span></div>
 
+<!-- MY STATS -->
+<div class="ovl" id="stats-ovl">
+  <div class="oh"><span>📊 My Statistics</span><button class="ib" id="stats-x">✕</button></div>
+  <div class="ob" id="stats-body"></div>
+</div>
+
 <!-- LEADERBOARD -->
 <div class="ovl" id="lb-ovl">
   <div class="oh"><span>🏆 Weekly Leaderboard</span><button class="ib" id="lb-x">✕</button></div>
@@ -413,7 +432,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 <div class="ovl" id="sp-ovl">
   <div class="oh"><span>☰ Menu</span><button class="ib" id="sp-x">✕</button></div>
   <div class="ob" id="sp-body">
-    <div style="margin-bottom:.85rem"><button class="btn bo" id="btn-lb2" style="height:38px;font-size:.75rem;margin-bottom:.5rem">🏆 Leaderboard</button><button class="btn bo" id="btn-sound" style="height:38px;font-size:.75rem;margin-bottom:.5rem">🔊 Sound: ON</button><button class="btn bo" id="btn-hhtog" style="height:38px;font-size:.75rem">📋 Toggle Hand Log</button></div>
+    <div style="margin-bottom:.85rem"><button class="btn bo" id="btn-mystats" style="height:38px;font-size:.75rem;margin-bottom:.5rem">📊 My Stats</button><button class="btn bo" id="btn-lb2" style="height:38px;font-size:.75rem;margin-bottom:.5rem">🏆 Leaderboard</button><button class="btn bo" id="btn-sound" style="height:38px;font-size:.75rem;margin-bottom:.5rem">🔊 Sound: ON</button><button class="btn bo" id="btn-hhtog" style="height:38px;font-size:.75rem">📋 Toggle Hand Log</button></div>
     <div style="margin-bottom:.85rem;padding-bottom:.85rem;border-bottom:1px solid var(--gold-dk)">
       <div style="font-size:.62rem;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.45rem">🎙 Push-to-Talk Key</div>
       <div style="font-size:.68rem;color:var(--txt-dim);margin-bottom:.5rem">Assign a key to talk (desktop). Default: Space</div>
@@ -448,6 +467,24 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 
 <script>
 var $=function(id){return document.getElementById(id);};
+
+/* ═══════════════════════════════════════════
+   IMAGE AVATARS — put your own image URLs here.
+   Upload pictures to your GitHub repo, e.g.:
+   https://aloudeapp-alt.github.io/SibstrinFold.io/avatars/1.png
+   then paste each URL below. Leave '' to skip a slot.
+   ═══════════════════════════════════════════ */
+var IMG_AVATARS=[
+  'https://aloudeapp-alt.github.io/SibstrinFold.io/avatars/1.png',
+  'https://aloudeapp-alt.github.io/SibstrinFold.io/avatars/2.png',
+  'https://aloudeapp-alt.github.io/SibstrinFold.io/avatars/3.png',
+  'https://aloudeapp-alt.github.io/SibstrinFold.io/avatars/4.png',
+  'https://aloudeapp-alt.github.io/SibstrinFold.io/avatars/5.png',
+  'https://aloudeapp-alt.github.io/SibstrinFold.io/avatars/6.png',
+  'https://aloudeapp-alt.github.io/SibstrinFold.io/avatars/7.png',
+  'https://aloudeapp-alt.github.io/SibstrinFold.io/avatars/8.png',
+  'https://aloudeapp-alt.github.io/SibstrinFold.io/avatars/9.png'
+];
 var SS=function(id){var s=document.querySelectorAll('.screen');for(var i=0;i<s.length;i++)s[i].classList.remove('active');$(id).classList.add('active');};
 function toast(m,d){d=d||2600;var t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},d);}
 
@@ -608,8 +645,13 @@ var G={
   resetProfile:function(){try{localStorage.removeItem('sf_profile');}catch(e){}$('nick').value='';this.myAv='🤵';this.myImg=null;var all=document.querySelectorAll('.ao');for(var i=0;i<all.length;i++)all[i].classList.remove('sel');document.querySelector('.ao[data-av="🤵"]').classList.add('sel');$('av-prev').style.display='none';$('psaved').style.display='none';toast('Profile reset');},
 
   bindLobby:function(){
-    var self=this;this.loadProfile();
-    $('av-grid').addEventListener('click',function(e){var o=e.target.closest('.ao');if(!o)return;if(o.dataset.av==='upload'){$('av-file').click();return;}var all=document.querySelectorAll('.ao');for(var i=0;i<all.length;i++)all[i].classList.remove('sel');o.classList.add('sel');self.myAv=o.dataset.av;self.myImg=null;$('av-prev').style.display='none';});
+    var self=this;
+    this.buildAvatarGrid();
+    this.loadProfile();
+    $('av-grid').addEventListener('click',function(e){var o=e.target.closest('.ao');if(!o)return;if(o.dataset.av==='upload'){$('av-file').click();return;}var all=document.querySelectorAll('.ao');for(var i=0;i<all.length;i++)all[i].classList.remove('sel');o.classList.add('sel');
+      if(o.dataset.img){self.myImg=o.dataset.img;self.myAv=o.dataset.av||'🤵';}
+      else{self.myAv=o.dataset.av;self.myImg=null;}
+      $('av-prev').style.display='none';});
     $('av-file').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){self.myImg=ev.target.result;$('av-img').src=ev.target.result;$('av-prev').style.display='block';};r.readAsDataURL(f);});
     $('nick').addEventListener('blur',function(){self.saveProfile();});
     $('btn-reset-profile').addEventListener('click',function(){self.resetProfile();});
@@ -617,8 +659,29 @@ var G={
     $('btn-join').addEventListener('click',function(){self.saveProfile();self.joinRoom();});
   },
 
+  buildAvatarGrid:function(){
+    var grid=$('av-grid');
+    var html='';
+    // image avatars first
+    for(var i=0;i<IMG_AVATARS.length;i++){
+      if(IMG_AVATARS[i]){
+        html+='<div class="ao ao-img'+(i===0?' sel':'')+'" data-img="'+IMG_AVATARS[i]+'" data-av="🤵" style="padding:0;overflow:hidden"><img src="'+IMG_AVATARS[i]+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentNode.style.display=\'none\'"></div>';
+      }
+    }
+    // emoji fallbacks
+    var emojis=['🤵','🎩','👑','🦊','🐺','😎'];
+    for(var j=0;j<emojis.length;j++){
+      html+='<div class="ao" data-av="'+emojis[j]+'">'+emojis[j]+'</div>';
+    }
+    html+='<div class="ao" data-av="upload">📷</div>';
+    grid.innerHTML=html;
+    // default selection: first image if it loads, else first emoji
+    this.myImg=IMG_AVATARS[0]||null;
+    this.myAv='🤵';
+  },
+
   nick:function(){return $('nick').value.trim()||'Player';},
-  mkP:function(id,name,av,img,chips){return{id:id,name:name,av:av,img:img,chips:chips,cards:[],bet:0,folded:false,allIn:false,lastAct:'',acted:false,busted:false,disconnected:false,lastBeat:Date.now(),st:{hands:0,wins:0,folds:0,raises:0,rWins:0,allIns:0,sc:chips}};},
+  mkP:function(id,name,av,img,chips){return{id:id,name:name,av:av,img:img,chips:chips,cards:[],bet:0,folded:false,allIn:false,lastAct:'',acted:false,busted:false,disconnected:false,lastBeat:Date.now(),st:{hands:0,wins:0,folds:0,raises:0,rWins:0,allIns:0,sc:chips,biggestPot:0,luckyHand:null}};},
 
   hostRoom:function(){
     var self=this,nick=this.nick(),code=Math.floor(1000+Math.random()*9000).toString();
@@ -765,6 +828,8 @@ var G={
     $('sp-x').onclick=function(){$('sp-ovl').classList.remove('open');};
     $('btn-lb2').onclick=function(){self.renderLB();$('sp-ovl').classList.remove('open');$('lb-ovl').classList.add('open');};
     $('lb-x').onclick=function(){$('lb-ovl').classList.remove('open');};
+    $('btn-mystats').onclick=function(){self.renderStats();$('sp-ovl').classList.remove('open');$('stats-ovl').classList.add('open');};
+    $('stats-x').onclick=function(){$('stats-ovl').classList.remove('open');};
     $('btn-hhtog').onclick=function(){$('hhlog').classList.toggle('vis');};
     $('btn-sound').onclick=function(){SFX.enabled=!SFX.enabled;$('btn-sound').textContent=SFX.enabled?'🔊 Sound: ON':'🔇 Sound: OFF';if(SFX.enabled)SFX.chip();};
     $('btn-leave').onclick=function(){if(confirm('Leave table?'))location.reload();};
@@ -870,6 +935,8 @@ var G={
   _triggerFinal:function(){
     var remaining=this.pl.filter(function(p){return !p.busted&&p.chips>0;});
     if(remaining.length===1){remaining[0].place=1;this._updWk(remaining[0]);}
+    // bump games-played career counter for everyone locally
+    try{var key='sf_career_'+this.nick();var c=JSON.parse(localStorage.getItem(key)||'null')||{games:0,wins:0,handsWon:0,biggestPot:0,luckyHand:null};c.games=(c.games||0)+1;if(remaining[0]&&remaining[0].id===this.myId)c.wins=(c.wins||0)+1;localStorage.setItem(key,JSON.stringify(c));}catch(e){}
     var allPlaces=remaining.map(function(p){return{name:p.name,av:p.av,chips:p.chips,place:1};}).concat(this.eliminated).sort(function(a,b){return a.place-b.place;});
     var fd={type:'final',places:allPlaces,winnerId:remaining[0]?remaining[0].id:''};
     this.bc(fd);this.showFinal(fd);
@@ -907,7 +974,73 @@ var G={
     if(this._sdTimer)clearInterval(this._sdTimer);
     this._sdTimer=setInterval(function(){secs--;if(secs<=0){clearInterval(self._sdTimer);$('sdovl').classList.remove('show');if(self.host)self.startHand();return;}nextBtn.textContent=self.host?('Next Hand ('+secs+'s) ▶'):('Next hand in '+secs+'s…');},1000);
   },
-  _updWk:function(w){var e=this.wk[w.name]||{chips:0,wins:0,name:w.name,av:w.av};e.chips+=this.pot;e.wins++;this.wk[w.name]=e;this.saveWk();},
+  renderStats:function(){
+    var c=this._loadCareer();
+    var me=this.pl[this.myI];
+    var games=c.games||0,handsWon=c.handsWon||0;
+    var totalHands=(me&&me.st&&me.st.hands)||c.handsPlayed||0;
+    var winRate=totalHands>0?Math.round(handsWon/totalHands*100):0;
+    var bp=c.biggestPot||0;
+    var avHtml=this.myImg?'<img src="'+this.myImg+'">':'<span>'+(this.myAv||'🤵')+'</span>';
+    var luckyHtml='';
+    if(c.luckyHand&&c.luckyHand.length===2){
+      luckyHtml='<div class="lucky-cards"></div>';
+    }
+    var title=this._careerTitle(c);
+    var body=$('stats-body');
+    body.innerHTML=
+      '<div class="stats-hero">'+
+        '<div class="stats-av"><div class="stats-av-in">'+avHtml+'</div></div>'+
+        '<div class="stats-name">'+this.nick()+'</div>'+
+        '<div class="stats-title">♛ '+title+'</div>'+
+      '</div>'+
+      '<div class="stats-grid">'+
+        '<div class="stat-card"><div class="stat-lbl">Hands Played</div><div class="stat-val">'+totalHands.toLocaleString()+'</div></div>'+
+        '<div class="stat-card"><div class="stat-lbl">Hands Won</div><div class="stat-val">'+handsWon.toLocaleString()+'</div></div>'+
+        '<div class="stat-card"><div class="stat-lbl">Win Rate</div><div class="stat-val">'+winRate+'%</div></div>'+
+        '<div class="stat-card"><div class="stat-lbl">Biggest Pot</div><div class="stat-val">'+bp.toLocaleString()+'</div></div>'+
+        '<div class="stat-card wide"><div class="stat-lbl">Lucky Hand</div><div class="stat-val" id="lucky-slot">'+(c.luckyHand?'':'—')+'</div></div>'+
+      '</div>';
+    if(c.luckyHand&&c.luckyHand.length===2){
+      var slot=$('lucky-slot');slot.innerHTML='';
+      var row=document.createElement('div');row.className='lucky-cards';
+      c.luckyHand.forEach(function(cd){row.appendChild(mkCard(cd,true,true));});
+      slot.appendChild(row);
+    }
+  },
+
+  _updWk:function(w){
+    var e=this.wk[w.name]||{chips:0,wins:0,name:w.name,av:w.av,games:0,biggestPot:0,luckyHand:null,handsPlayed:0};
+    e.chips+=this.pot;e.wins++;
+    if(this.pot>(e.biggestPot||0)){e.biggestPot=this.pot;e.luckyHand=w.cards&&w.cards.length===2&&!w.cards[0].h?[w.cards[0],w.cards[1]]:e.luckyHand;}
+    e.handsPlayed=(w.st&&w.st.hands)||e.handsPlayed;
+    this.wk[w.name]=e;this.saveWk();
+    this._saveCareer(w);
+  },
+  // Career stats stored separately per nickname, persists across games
+  _saveCareer:function(w){
+    try{
+      var key='sf_career_'+this.nick();
+      var c=JSON.parse(localStorage.getItem(key)||'null')||{games:0,wins:0,handsWon:0,biggestPot:0,luckyHand:null};
+      if(w.id===this.myId){
+        c.handsWon=(c.handsWon||0)+1;
+        if(this.pot>(c.biggestPot||0)){c.biggestPot=this.pot;if(w.cards&&w.cards.length===2&&!w.cards[0].h)c.luckyHand=[w.cards[0],w.cards[1]];}
+        localStorage.setItem(key,JSON.stringify(c));
+      }
+    }catch(e){}
+  },
+  _loadCareer:function(){
+    try{return JSON.parse(localStorage.getItem('sf_career_'+this.nick())||'null')||{games:0,wins:0,handsWon:0,biggestPot:0,luckyHand:null};}catch(e){return{games:0,wins:0,handsWon:0,biggestPot:0,luckyHand:null};}
+  },
+  _careerTitle:function(c){
+    var hw=c.handsWon||0,bp=c.biggestPot||0;
+    if(bp>=50000)return'High Roller';
+    if(hw>=100)return'Card Shark';
+    if(hw>=50)return'Queen of Rivers';
+    if(hw>=20)return'Table Veteran';
+    if(hw>=5)return'Rising Star';
+    return'Newcomer';
+  },
 
   startTimer:function(){var self=this;clearInterval(this.tmr);SFX.turn();this.tLeft=this.cfg.tm;var f=$('tfill');f.style.width='100%';this.tmr=setInterval(function(){self.tLeft--;f.style.width=(self.tLeft/self.cfg.tm*100)+'%';if(self.tLeft<=0){clearInterval(self.tmr);self.act('fold');}},1000);},
   hostTimer:function(){var self=this;clearInterval(this.tmr);if(!this.host)return;this.tLeft=this.cfg.tm;var f=$('tfill');f.style.width='100%';this.tmr=setInterval(function(){self.tLeft--;f.style.width=(self.tLeft/self.cfg.tm*100)+'%';if(self.tLeft<=0){clearInterval(self.tmr);var p=self.pl[self.cur];if(p&&!p.folded&&!p.busted){p.folded=true;p.lastAct='Fold(T/O)';}self.advance();self.bcDeal(null);self.renderAll();}},1000);},
