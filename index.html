@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>SIBSTRIN Fold</title>
+<link rel="icon" type="image/x-icon" href="https://aloudeapp-alt.github.io/SibstrinFold.io/favicon.ico">
+<link rel="shortcut icon" href="https://aloudeapp-alt.github.io/SibstrinFold.io/favicon.ico">
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -244,7 +246,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:#c8e
 <body>
 <div id="toast" class="toast"></div>
 <div style="position:fixed;bottom:6px;left:8px;z-index:999;pointer-events:none">
-  <span style="font-size:.48rem;color:rgba(0,255,231,.22);letter-spacing:1.5px;text-transform:uppercase;font-family:monospace">SIBSTRIN FOLD · v42</span>
+  <span style="font-size:.48rem;color:rgba(0,255,231,.22);letter-spacing:1.5px;text-transform:uppercase;font-family:monospace">SIBSTRIN FOLD · v45</span>
 </div>
 
 <!-- LOBBY -->
@@ -252,8 +254,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:#c8e
   <div style="margin:1rem 0 .2rem">
     <div class="logo-t">SIBSTRIN FOLD</div>
     <div style="font-size:1.1rem;letter-spacing:8px;color:var(--neon2);opacity:.35;text-align:center">♠ ♥ ♦ ♣</div>
-    <div class="logo-s">Texas Hold'em</div>
-  </div>
+    <div class="logo-s">Texas Hold'em</div>  </div>
   <div class="lc"><h3>Profile</h3>
     <div id="profile-saved-banner" style="display:none;background:rgba(0,255,231,.07);border:1px solid rgba(0,255,231,.2);border-radius:8px;padding:.4rem .7rem;margin-bottom:.6rem;display:none;align-items:center;gap:.5rem">
       <span style="font-size:.72rem;color:var(--neon)">✓ Profile loaded</span>
@@ -1176,61 +1177,62 @@ const PTT={
   talking:false,
   enabled:false,
 
-  async init(peer,conns,myName){
-    this.peer=peer;this.conns=conns;this.myName=myName;
-    // Show button immediately — mic requested on first press
-    this.setupBtn();
-    // Answer incoming audio calls even before mic is ready
-    peer.on('call',call=>{
-      const answer=()=>{
-        call.answer(this.stream||new MediaStream());
-        call.on('stream',remote=>this._playRemote(call.peer,remote));
-        call.on('close',()=>this._removeRemote(call.peer));
-        this.inCalls[call.peer]=call;
-      };
-      if(this.stream)answer();
-      else this._pendingCalls=(this._pendingCalls||[]).push(answer);
+  init:function(peer,conns,myName){
+    var self=this;
+    self.peer=peer;self.conns=conns;self.myName=myName;
+    self.setupBtn();
+    peer.on('call',function(call){
+      function answer(){
+        call.answer(self.stream||new MediaStream());
+        call.on('stream',function(remote){self._playRemote(call.peer,remote);});
+        call.on('close',function(){self._removeRemote(call.peer);});
+        self.inCalls[call.peer]=call;
+      }
+      if(self.stream)answer();
+      else{self._pendingCalls=self._pendingCalls||[];self._pendingCalls.push(answer);}
     });
-    peer.on('connection',conn=>{
-      conn.on('open',()=>setTimeout(()=>this._callPeer(conn.peer),800));
+    peer.on('connection',function(conn){
+      conn.on('open',function(){setTimeout(function(){self._callPeer(conn.peer);},800);});
     });
   },
 
-  async _acquireMic(){
-    if(this.stream)return true;
-    try{
-      this.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false});
-      this.stream.getAudioTracks().forEach(t=>t.enabled=false);
-      this.enabled=true;
-      // Answer any pending calls
-      (this._pendingCalls||[]).forEach(fn=>fn());
-      this._pendingCalls=[];
-      // Call all existing peers
-      this.conns.forEach(conn=>this._callPeer(conn.peer));
-      return true;
-    }catch(e){
-      toast('🎙 Mic access denied — check browser permissions');
-      return false;
-    }
+  _acquireMic:function(){
+    var self=this;
+    if(self.stream)return Promise.resolve(true);
+    return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false})
+      .then(function(stream){
+        self.stream=stream;
+        self.stream.getAudioTracks().forEach(function(t){t.enabled=false;});
+        self.enabled=true;
+        var pending=self._pendingCalls||[];
+        for(var i=0;i<pending.length;i++)pending[i]();
+        self._pendingCalls=[];
+        self.conns.forEach(function(conn){self._callPeer(conn.peer);});
+        return true;
+      })
+      .catch(function(){
+        toast('Mic access denied');
+        return false;
+      });
   },
 
-  _callPeer(peerId){
+  _callPeer:function(peerId){
+    var self=this;
     if(this.calls[peerId]||!this.stream)return;
-    const call=this.peer.call(peerId,this.stream);
+    var call=this.peer.call(peerId,this.stream);
     if(!call)return;
-    call.on('stream',remote=>this._playRemote(peerId,remote));
-    call.on('close',()=>this._removeRemote(peerId));
+    call.on('stream',function(remote){self._playRemote(peerId,remote);});
+    call.on('close',function(){self._removeRemote(peerId);});
     this.calls[peerId]=call;
   },
-
-  _playRemote(peerId,stream){
+  _playRemote:function(peerId,stream){
     this._removeRemote(peerId);
-    const audio=document.createElement('audio');
+    var audio=document.createElement('audio');
     audio.autoplay=true;audio.srcObject=stream;
     document.body.appendChild(audio);
     this.remoteAudios[peerId]=audio;
   },
-  _removeRemote(peerId){
+  _removeRemote:function(peerId){
     if(this.remoteAudios[peerId]){
       this.remoteAudios[peerId].srcObject=null;
       this.remoteAudios[peerId].remove();
@@ -1269,7 +1271,6 @@ const PTT={
     btn.addEventListener('touchcancel',stopTalk);
     document.addEventListener('keydown',function(e){if(e.code==='Space'&&e.target.tagName!=='INPUT'&&!self.talking){e.preventDefault();startTalk();}});
     document.addEventListener('keyup',function(e){if(e.code==='Space')stopTalk();});
-  },
 
     // Mouse
     btn.addEventListener('mousedown',e=>{e.preventDefault();startTalk();});
@@ -1288,8 +1289,8 @@ const PTT={
     });
   },
 
-  onPttMsg(data){
-    const btn=$('ptt-btn');
+  onPttMsg:function(data){
+    var btn=$('ptt-btn');
     if(data.action==='start'){
       btn.classList.add('peer-talking');
       this._showIndicator(data.name,false);
@@ -1298,25 +1299,24 @@ const PTT={
       this._hideIndicator();
     }
   },
-
-  _showIndicator(name,isMe){
-    const ind=$('ptt-indicator');
-    const dot=$('ptt-dot');
-    const who=$('ptt-who');
-    who.textContent=isMe?'YOU ': name+' ';
+  _showIndicator:function(name,isMe){
+    var ind=$('ptt-indicator');
+    var dot=$('ptt-dot');
+    var who=$('ptt-who');
+    who.textContent=isMe?'YOU':name;
     dot.style.background=isMe?'var(--neon)':'var(--pink)';
     dot.style.boxShadow=isMe?'0 0 8px var(--neon)':'0 0 8px var(--pink)';
     ind.style.display='flex';
   },
-  _hideIndicator(){
+  _hideIndicator:function(){
     $('ptt-indicator').style.display='none';
   },
-
-  destroy(){
-    if(this.stream)this.stream.getTracks().forEach(t=>t.stop());
-    Object.values(this.calls).forEach(c=>c.close());
-    Object.values(this.inCalls).forEach(c=>c.close());
-    Object.values(this.remoteAudios).forEach(a=>{a.srcObject=null;a.remove();});
+  destroy:function(){
+    if(this.stream)this.stream.getTracks().forEach(function(t){t.stop();});
+    var self=this;
+    Object.keys(this.calls).forEach(function(k){self.calls[k].close();});
+    Object.keys(this.inCalls).forEach(function(k){self.inCalls[k].close();});
+    Object.keys(this.remoteAudios).forEach(function(k){self.remoteAudios[k].srcObject=null;self.remoteAudios[k].remove();});
   }
 };
 
