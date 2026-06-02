@@ -249,7 +249,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:#c8e
 <body>
 <div id="toast" class="toast"></div>
 <div style="position:fixed;bottom:6px;left:8px;z-index:999;pointer-events:none">
-  <span style="font-size:.48rem;color:rgba(0,255,231,.22);letter-spacing:1.5px;text-transform:uppercase;font-family:monospace">SIBSTRIN FOLD · v51</span>
+  <span style="font-size:.48rem;color:rgba(0,255,231,.22);letter-spacing:1.5px;text-transform:uppercase;font-family:monospace">SIBSTRIN FOLD · v52</span>
 </div>
 
 <!-- LOBBY -->
@@ -1448,14 +1448,23 @@ TP.init();
 // Wire up PTT button once, at page load, when DOM is fully ready
 (function(){
   var btn=document.getElementById('ptt-btn');
-  if(!btn)return;
+  if(!btn){
+    btn=document.createElement('button');
+    btn.id='ptt-btn';
+    btn.className='ptt-fab';
+    btn.title='Hold to Talk (Space)';
+    btn.textContent='🎙';
+    document.body.appendChild(btn);
+  }
+  // force-show styling inline so nothing can hide it
+  btn.style.cssText='position:fixed;bottom:74px;right:14px;width:46px;height:46px;border-radius:50%;background:#003d30;border:2px solid #00ffe7;color:#00ffe7;font-size:1.25rem;cursor:pointer;z-index:95;display:none;align-items:center;justify-content:center;box-shadow:0 0 10px rgba(0,255,231,.45);touch-action:none';
   function startTalk(){
     if(PTT.talking)return;
     PTT._acquireMic().then(function(ok){
       if(!ok)return;
       PTT.talking=true;
       if(PTT.stream)PTT.stream.getAudioTracks().forEach(function(t){t.enabled=true;});
-      btn.classList.add('active');
+      btn.style.background='#00ffe7';btn.style.color='#012';btn.style.boxShadow='0 0 18px #00ffe7';
       PTT._showIndicator(PTT.myName||G.nick(),true);
       G.bc({type:'ptt',action:'start',name:PTT.myName||G.nick()});
     });
@@ -1464,10 +1473,11 @@ TP.init();
     if(!PTT.talking)return;
     PTT.talking=false;
     if(PTT.stream)PTT.stream.getAudioTracks().forEach(function(t){t.enabled=false;});
-    btn.classList.remove('active');
+    btn.style.background='#003d30';btn.style.color='#00ffe7';btn.style.boxShadow='0 0 10px rgba(0,255,231,.45)';
     PTT._hideIndicator();
     G.bc({type:'ptt',action:'stop',name:PTT.myName||G.nick()});
   }
+  PTT._extStart=startTalk;PTT._extStop=stopTalk;
   btn.onmousedown=function(e){e.preventDefault();startTalk();};
   btn.onmouseup=stopTalk;
   btn.onmouseleave=stopTalk;
