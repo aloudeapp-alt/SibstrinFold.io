@@ -52,6 +52,10 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 .ao{aspect-ratio:1;border-radius:50%;cursor:pointer;border:2px solid var(--gold-dk);font-size:1.3rem;display:flex;align-items:center;justify-content:center;background:#0a0805;transition:.15s}
 .ao.sel{border-color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.4)}
 .psaved{display:none;background:rgba(212,175,55,.08);border:1px solid var(--gold-dk);border-radius:8px;padding:.4rem .7rem;margin-bottom:.6rem;align-items:center;gap:.5rem}
+.preset-btn{flex:1;background:#0a0805;border:1px solid var(--gold-dk);border-radius:9px;color:var(--txt-dim);padding:.5rem .3rem;cursor:pointer;font-family:'Segoe UI',sans-serif;font-size:.72rem;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:1px;transition:.14s}
+.preset-btn span{font-size:.54rem;color:var(--txt-dim);font-weight:400;opacity:.7}
+.preset-btn.sel{border-color:var(--gold);background:rgba(212,175,55,.1);color:var(--gold)}
+.preset-btn.sel span{color:var(--gold-lt)}
 
 /* ── TOP BAR ── */
 .tbar{display:flex;justify-content:space-between;align-items:flex-start;padding:.7rem .8rem .3rem;flex-shrink:0;position:relative;z-index:20}
@@ -292,7 +296,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v60</div>
+<div class="ver">SIBSTRIN FOLD · v61</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -318,12 +322,18 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
     </div>
   </div>
   <div class="lc"><h3>Host a Table</h3>
+    <div style="font-size:.62rem;color:var(--txt-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem;font-family:'Segoe UI',sans-serif">Quick Preset</div>
+    <div style="display:flex;gap:5px;margin-bottom:.7rem">
+      <button class="preset-btn" data-preset="fast">⚡ Fast<span>~45 min</span></button>
+      <button class="preset-btn sel" data-preset="standard">♦ Standard<span>~60 min</span></button>
+      <button class="preset-btn" data-preset="deep">♛ Deep<span>~90 min</span></button>
+    </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-bottom:.5rem">
       <div class="f"><label>Small Blind</label><input id="h-sb" type="number" value="50" min="1"></div>
       <div class="f"><label>Big Blind</label><input id="h-bb" type="number" value="100" min="2"></div>
-      <div class="f"><label>Buy-in</label><input id="h-bi" type="number" value="10000" min="100"></div>
+      <div class="f"><label>Buy-in</label><input id="h-bi" type="number" value="5000" min="100"></div>
       <div class="f"><label>Turn timer(s)</label><input id="h-tm" type="number" value="30" min="10"></div>
-      <div class="f"><label>Blind raise(min)</label><input id="h-br" type="number" value="15" min="5"></div>
+      <div class="f"><label>Blind raise(min)</label><input id="h-br" type="number" value="12" min="5"></div>
       <div class="f"><label>Max players</label><select id="h-mp"><option value="2">2</option><option value="4">4</option><option value="6">6</option><option value="9" selected>9</option></select></div>
     </div>
     <div class="f" style="margin-bottom:.6rem"><label>Table name</label><input id="h-rn" placeholder="Friday Night"></div>
@@ -657,6 +667,21 @@ var G={
     $('btn-reset-profile').addEventListener('click',function(){self.resetProfile();});
     $('btn-host').addEventListener('click',function(){self.saveProfile();self.hostRoom();});
     $('btn-join').addEventListener('click',function(){self.saveProfile();self.joinRoom();});
+    // Preset buttons
+    var PRESETS={
+      fast:{sb:25,bb:50,bi:2000,tm:20,br:8},
+      standard:{sb:50,bb:100,bi:5000,tm:30,br:12},
+      deep:{sb:50,bb:100,bi:10000,tm:30,br:15}
+    };
+    var pbtns=document.querySelectorAll('.preset-btn');
+    for(var i=0;i<pbtns.length;i++){
+      pbtns[i].addEventListener('click',function(){
+        var all=document.querySelectorAll('.preset-btn');for(var k=0;k<all.length;k++)all[k].classList.remove('sel');
+        this.classList.add('sel');
+        var p=PRESETS[this.dataset.preset];
+        $('h-sb').value=p.sb;$('h-bb').value=p.bb;$('h-bi').value=p.bi;$('h-tm').value=p.tm;$('h-br').value=p.br;
+      });
+    }
   },
 
   buildAvatarGrid:function(){
