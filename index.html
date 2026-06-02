@@ -292,7 +292,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v59</div>
+<div class="ver">SIBSTRIN FOLD · v60</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -870,14 +870,23 @@ var G={
     clearInterval(this.tmr);
     var alive=this.pl.filter(function(p){return !p.folded&&!p.busted;});
     if(alive.length<=1){this.endHand();return;}
-    var canAct=alive.filter(function(p){return !p.allIn;});
-    if(canAct.length===0){this.nextPhase();return;}
     var mx=Math.max.apply(null,alive.map(function(p){return p.bet||0;}));
-    if(canAct.length===1&&(canAct[0].bet||0)>=mx){this.nextPhase();return;}
-    var next=(this.cur+1)%this.pl.length,t=0;
-    while(true){var p=this.pl[next];if(!p.folded&&!p.allIn&&!p.busted){if(!p.acted||(p.bet||0)<mx)break;}next=(next+1)%this.pl.length;if(++t>this.pl.length){this.nextPhase();return;}}
-    var allDone=alive.filter(function(p){return !p.allIn;}).every(function(p){return p.acted&&(p.bet||0)===mx;});
+    var canAct=alive.filter(function(p){return !p.allIn;});
+    // No one can still act (everyone all-in) → run remaining board
+    if(canAct.length===0){this.nextPhase();return;}
+    // Round is complete when every non-all-in player has acted AND matched the max bet
+    var allDone=canAct.every(function(p){return p.acted&&(p.bet||0)===mx;});
     if(allDone){this.nextPhase();return;}
+    // Otherwise find the next player who still needs to act
+    var next=(this.cur+1)%this.pl.length,t=0;
+    while(true){
+      var p=this.pl[next];
+      if(!p.folded&&!p.allIn&&!p.busted){
+        if(!p.acted||(p.bet||0)<mx)break;
+      }
+      next=(next+1)%this.pl.length;
+      if(++t>this.pl.length){this.nextPhase();return;}
+    }
     this.cur=next;this.bcDeal(null);this.renderAll();
     if(this.isMe())this.startTimer();else this.hostTimer();
   },
