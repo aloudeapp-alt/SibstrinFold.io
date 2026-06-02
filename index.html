@@ -116,6 +116,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:#c8e
 .seat.active .sav{border-color:var(--neon);box-shadow:0 0 9px rgba(0,255,231,.5),0 0 20px rgba(0,255,231,.16)}
 .seat.folded .sav{opacity:.3;filter:grayscale(.8)}
 .sname{font-size:.52rem;color:rgba(0,255,231,.5);max-width:62px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
+.pstatus{display:block;font-size:.45rem;margin-top:1px;letter-spacing:.3px}
+.pstatus.good{color:#22dd88}.pstatus.mid{color:#ffaa00}.pstatus.bad{color:#ff5544}.pstatus.off{color:#ff2d78}
 .sblind{font-size:.48rem;background:rgba(255,45,120,.16);border:1px solid rgba(255,45,120,.38);border-radius:7px;padding:1px 4px;color:var(--pink);font-weight:700}
 .sbet{font-size:.55rem;background:rgba(0,255,231,.07);border:1px solid rgba(0,255,231,.22);border-radius:9px;padding:1px 5px;color:var(--neon)}
 .scards{display:flex;gap:2px;margin-top:1px}
@@ -249,7 +251,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:#c8e
 <body>
 <div id="toast" class="toast"></div>
 <div style="position:fixed;bottom:6px;left:8px;z-index:999;pointer-events:none">
-  <span style="font-size:.48rem;color:rgba(0,255,231,.22);letter-spacing:1.5px;text-transform:uppercase;font-family:monospace">SIBSTRIN FOLD · v53</span>
+  <span style="font-size:.48rem;color:rgba(0,255,231,.22);letter-spacing:1.5px;text-transform:uppercase;font-family:monospace">SIBSTRIN FOLD · v55</span>
 </div>
 
 <!-- LOBBY -->
@@ -444,6 +446,15 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:#c8e
     <div style="margin-bottom:.85rem">
       <div style="font-size:.62rem;color:var(--neon);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.45rem">Display</div>
       <button class="btn bn" id="btn-hhtog" style="height:36px;font-size:.78rem">Toggle Hand Log</button>
+    </div>
+    <div style="margin-bottom:.85rem;padding-bottom:.85rem;border-bottom:1px solid rgba(0,255,231,.08)">
+      <div style="font-size:.62rem;color:var(--neon);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.45rem">🎙 Push-to-Talk Key</div>
+      <div style="font-size:.68rem;color:rgba(0,255,231,.5);margin-bottom:.5rem">Assign a keyboard key to talk (desktop). Default: Space</div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="btn bn" id="btn-ptt-key" style="height:36px;font-size:.78rem;flex:1">Key: <span id="ptt-key-lbl">SPACE</span></button>
+        <button class="btn bp" id="btn-ptt-key-reset" style="height:36px;font-size:.72rem;width:auto;padding:0 .8rem">Reset</button>
+      </div>
+      <div id="ptt-key-hint" style="display:none;font-size:.68rem;color:var(--pink);margin-top:.4rem;text-align:center">Press any key…</div>
     </div>
     <div id="sp-host"></div>
   </div>
@@ -946,7 +957,6 @@ const G={
     this._checkBusted();
     const sdData={type:'showdown',pl:this.pl,board:this.board,winnerId:winner.id,handName:best.name,pot:this.pot,elim:this.eliminated};
     this.bc(sdData);this.showSD(sdData);
-    setTimeout(()=>{this.bcDeal(null);this.renderAll();},6000);
   },
 
   endHand(){
@@ -958,7 +968,6 @@ const G={
     this._checkBusted();
     const sdData={type:'showdown',pl:this.pl,board:this.board,winnerId:w.id,handName:'All folded',pot:this.pot,elim:this.eliminated};
     this.bc(sdData);this.showSD(sdData);
-    setTimeout(()=>{this.bcDeal(null);this.renderAll();},4000);
   },
 
   // Check for newly busted players (chips=0), assign place
@@ -1008,32 +1017,49 @@ const G={
   },
 
   showSD(d){
+    var self=this;
     const sb=$('sd-board');sb.innerHTML='';
     if(d.board&&d.board.length){
-      d.board.forEach((c,i)=>{const el=mkCard(c,false,false);sb.appendChild(el);setTimeout(()=>el.classList.add('flipped'),200+i*200);});
+      d.board.forEach((c,i)=>{const el=mkCard(c,false,false);sb.appendChild(el);setTimeout(function(){el.classList.add('flipped');},200+i*200);});
     } else {sb.innerHTML='<div style="font-size:.7rem;color:rgba(0,255,231,.3)">No board</div>';}
     const cont=$('sd-players');cont.innerHTML='';
-    const showable=d.pl.filter(p=>!p.folded&&!p.busted&&p.cards&&p.cards.length===2&&!p.cards[0].h);
-    const folded=d.pl.filter(p=>p.folded&&!p.busted);
-    showable.forEach(p=>{
+    const showable=d.pl.filter(function(p){return !p.folded&&!p.busted&&p.cards&&p.cards.length===2&&!p.cards[0].h;});
+    const folded=d.pl.filter(function(p){return p.folded&&!p.busted;});
+    showable.forEach(function(p){
       const isWin=p.id===d.winnerId;
       let ev=null;try{ev=p.cards&&p.cards.length===2&&d.board&&d.board.length>=3?evalHand(p.cards,d.board):null;}catch(e){}
       const div=document.createElement('div');div.className='sd-player'+(isWin?' winner':'');
       div.innerHTML=`<div class="sd-av">${p.av||'🎴'}</div><div class="sd-pname">${p.name}</div>${ev?`<div class="sd-hand">${ev.name}</div>`:''}${isWin?`<div class="sd-win">+${d.pot} 🏆</div>`:''}`;
       const cr=document.createElement('div');cr.className='sd-cards-row';
-      p.cards.forEach(c=>{const el=mkCard(c,false,false);cr.appendChild(el);});
+      p.cards.forEach(function(c){const el=mkCard(c,false,false);cr.appendChild(el);});
       div.appendChild(cr);cont.appendChild(div);
       const delay=d.board?d.board.length*220+600:600;
-      cr.querySelectorAll('.card').forEach((el,i)=>{setTimeout(()=>el.classList.add('flipped'),delay+i*280);});
+      cr.querySelectorAll('.card').forEach(function(el,i){setTimeout(function(){el.classList.add('flipped');},delay+i*280);});
     });
-    folded.forEach(p=>{
+    folded.forEach(function(p){
       const div=document.createElement('div');div.className='sd-player';div.style.opacity='.45';
       div.innerHTML=`<div class="sd-av">${p.av||'🎴'}</div><div class="sd-pname">${p.name}</div><div class="sd-folded">Folded</div>`;
       cont.appendChild(div);
     });
     $('sdovl').classList.add('show');
-    $('sd-next').style.display=this.host&&!this.isSpec?'inline-block':'none';
-    if(!this.host)setTimeout(()=>$('sdovl').classList.remove('show'),9000);
+
+    // Countdown to next hand — auto, synced for everyone
+    var nextBtn=$('sd-next');
+    var secs=10;
+    nextBtn.style.display='inline-block';
+    nextBtn.textContent=this.host?('Next Hand ('+secs+'s) ▶'):('Next hand in '+secs+'s…');
+    nextBtn.disabled=!this.host;
+    if(this._sdTimer)clearInterval(this._sdTimer);
+    this._sdTimer=setInterval(function(){
+      secs--;
+      if(secs<=0){
+        clearInterval(self._sdTimer);
+        $('sdovl').classList.remove('show');
+        if(self.host)self.startHand();
+        return;
+      }
+      nextBtn.textContent=self.host?('Next Hand ('+secs+'s) ▶'):('Next hand in '+secs+'s…');
+    },1000);
   },
 
   _updWk(w){const e=this.wk[w.name]||{chips:0,wins:0,name:w.name,av:w.av};e.chips+=this.pot;e.wins++;this.wk[w.name]=e;this.saveWk();},
@@ -1484,8 +1510,51 @@ TP.init();
   btn.ontouchstart=function(e){e.preventDefault();startTalk();};
   btn.ontouchend=function(e){e.preventDefault();stopTalk();};
   btn.ontouchcancel=stopTalk;
-  document.onkeydown=function(e){if(e.code==='Space'&&e.target.tagName!=='INPUT'&&!PTT.talking){e.preventDefault();startTalk();}};
-  document.onkeyup=function(e){if(e.code==='Space')stopTalk();};
+
+  // Load saved PTT key
+  try{PTT.key=localStorage.getItem('sf_ptt_key')||'Space';}catch(e){PTT.key='Space';}
+
+  document.onkeydown=function(e){
+    if(PTT._capturingKey)return;
+    if(e.code===PTT.key&&e.target.tagName!=='INPUT'&&!PTT.talking){e.preventDefault();startTalk();}
+  };
+  document.onkeyup=function(e){if(e.code===PTT.key)stopTalk();};
+
+  // Settings: PTT key assignment
+  function keyLabel(code){
+    if(code==='Space')return'SPACE';
+    return code.replace('Key','').replace('Digit','').replace('Arrow','').toUpperCase();
+  }
+  var keyLbl=document.getElementById('ptt-key-lbl');
+  if(keyLbl)keyLbl.textContent=keyLabel(PTT.key);
+  var btnKey=document.getElementById('btn-ptt-key');
+  if(btnKey){
+    btnKey.onclick=function(){
+      PTT._capturingKey=true;
+      document.getElementById('ptt-key-hint').style.display='block';
+      keyLbl.textContent='...';
+      var capture=function(ev){
+        ev.preventDefault();
+        PTT.key=ev.code;
+        try{localStorage.setItem('sf_ptt_key',ev.code);}catch(e){}
+        keyLbl.textContent=keyLabel(ev.code);
+        document.getElementById('ptt-key-hint').style.display='none';
+        PTT._capturingKey=false;
+        document.removeEventListener('keydown',capture,true);
+        toast('PTT key set to '+keyLabel(ev.code));
+      };
+      document.addEventListener('keydown',capture,true);
+    };
+  }
+  var btnKeyReset=document.getElementById('btn-ptt-key-reset');
+  if(btnKeyReset){
+    btnKeyReset.onclick=function(){
+      PTT.key='Space';
+      try{localStorage.setItem('sf_ptt_key','Space');}catch(e){}
+      keyLbl.textContent='SPACE';
+      toast('PTT key reset to Space');
+    };
+  }
 })();
 </script>
 </body>
