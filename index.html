@@ -694,6 +694,8 @@ const G={
       if(this.host)this.procAction(d);
     } else if(d.type==='chat'){
       this.addChat(d.name,d.av,d.msg,false);
+    } else if(d.type==='ptt'){
+      PTT.onPttMsg(d);
     } else if(d.type==='showdown'){
       this.pl=d.pl;this.board=d.board||[];this.eliminated=d.elim||[];
       this.myI=this.pl.findIndex(p=>p.id===this.myId);
@@ -721,6 +723,8 @@ const G={
     $('cfab').style.display='flex';$('wcode').textContent=this.code||'——';
     if(this.host){$('host-deal-wrap').style.display='block';this.setupSP();}
     if(!this._bt)this.startBT();
+    // Init PTT immediately — button shows right away, mic requested on first press
+    PTT.init(this.peer,this.conns,this.nick());
     this.renderWaiting();this.updateSpecBanner();
   },
   showTable(){$('wlobby').style.display='none';$('gtable').style.display='flex';},
@@ -1171,29 +1175,39 @@ const PTT={
 
   async init(peer,conns,myName){
     this.peer=peer;this.conns=conns;this.myName=myName;
-    // Request mic
-    try{
-      this.stream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
-      // Start muted — only unmute on PTT hold
-      this.stream.getAudioTracks().forEach(t=>t.enabled=false);
-      this.enabled=true;
-      this.setupBtn();
-      // Answer incoming audio calls
-      peer.on('call',call=>{
-        call.answer(this.stream);
+    // Show button immediately — mic requested on first press
+    this.setupBtn();
+    // Answer incoming audio calls even before mic is ready
+    peer.on('call',call=>{
+      const answer=()=>{
+        call.answer(this.stream||new MediaStream());
         call.on('stream',remote=>this._playRemote(call.peer,remote));
         call.on('close',()=>this._removeRemote(call.peer));
         this.inCalls[call.peer]=call;
-      });
+      };
+      if(this.stream)answer();
+      else this._pendingCalls=(this._pendingCalls||[]).push(answer);
+    });
+    peer.on('connection',conn=>{
+      conn.on('open',()=>setTimeout(()=>this._callPeer(conn.peer),800));
+    });
+  },
+
+  async _acquireMic(){
+    if(this.stream)return true;
+    try{
+      this.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false});
+      this.stream.getAudioTracks().forEach(t=>t.enabled=false);
+      this.enabled=true;
+      // Answer any pending calls
+      (this._pendingCalls||[]).forEach(fn=>fn());
+      this._pendingCalls=[];
       // Call all existing peers
-      conns.forEach(conn=>this._callPeer(conn.peer));
-      // When a new peer connects, call them
-      peer.on('connection',conn=>{
-        conn.on('open',()=>setTimeout(()=>this._callPeer(conn.peer),800));
-      });
+      this.conns.forEach(conn=>this._callPeer(conn.peer));
+      return true;
     }catch(e){
-      console.warn('PTT mic denied:',e);
-      toast('Mic not available — PTT disabled');
+      toast('🎙 Mic access denied — check browser permissions');
+      return false;
     }
   },
 
@@ -1225,22 +1239,23 @@ const PTT={
     const btn=$('ptt-btn');
     btn.style.display='flex';
 
-    const startTalk=()=>{
-      if(!this.enabled||this.talking)return;
+    const startTalk=async()=>{
+      if(this.talking)return;
+      const ok=await this._acquireMic();
+      if(!ok)return;
       this.talking=true;
       this.stream.getAudioTracks().forEach(t=>t.enabled=true);
       btn.classList.add('active');
-      btn.textContent='📢';
+      btn.querySelector('span').textContent='ON AIR';
       this._showIndicator(this.myName,true);
-      // Notify peers via data channel
       G.bc({type:'ptt',action:'start',name:this.myName});
     };
     const stopTalk=()=>{
       if(!this.talking)return;
       this.talking=false;
-      this.stream.getAudioTracks().forEach(t=>t.enabled=false);
+      if(this.stream)this.stream.getAudioTracks().forEach(t=>t.enabled=false);
       btn.classList.remove('active');
-      btn.textContent='🎙';
+      btn.querySelector('span').textContent='PTT';
       this._hideIndicator();
       G.bc({type:'ptt',action:'stop',name:this.myName});
     };
