@@ -292,7 +292,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v58</div>
+<div class="ver">SIBSTRIN FOLD · v59</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -662,20 +662,15 @@ var G={
   buildAvatarGrid:function(){
     var grid=$('av-grid');
     var html='';
-    // image avatars first
+    // image avatars only
     for(var i=0;i<IMG_AVATARS.length;i++){
       if(IMG_AVATARS[i]){
         html+='<div class="ao ao-img'+(i===0?' sel':'')+'" data-img="'+IMG_AVATARS[i]+'" data-av="🤵" style="padding:0;overflow:hidden"><img src="'+IMG_AVATARS[i]+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentNode.style.display=\'none\'"></div>';
       }
     }
-    // emoji fallbacks
-    var emojis=['🤵','🎩','👑','🦊','🐺','😎'];
-    for(var j=0;j<emojis.length;j++){
-      html+='<div class="ao" data-av="'+emojis[j]+'">'+emojis[j]+'</div>';
-    }
+    // upload own photo
     html+='<div class="ao" data-av="upload">📷</div>';
     grid.innerHTML=html;
-    // default selection: first image if it loads, else first emoji
     this.myImg=IMG_AVATARS[0]||null;
     this.myAv='🤵';
   },
@@ -1093,7 +1088,6 @@ var G={
     var plate=document.createElement('div');plate.className='seat-plate';
     plate.innerHTML='<div class="seat-name">'+(tr?tr+' ':'')+p.name+(p.busted?' 💀':'')+'</div>'+(!p.busted?'<div class="seat-chips">'+(p.chips||0).toLocaleString()+'</div>':'')+statusHtml;
     div.appendChild(plate);
-    var bd=document.createElement('div');bd.className='seat-badge';bd.textContent=b.icon+' '+b.name;div.appendChild(bd);
     // blind label
     var gi=this.pl.indexOf(p);
     if((gi===this.sbI||gi===this.bbI)&&!p.busted&&this.phase!=='waiting'&&this.phase!=='showdown'){var bl=document.createElement('div');bl.className='sblind';bl.textContent=gi===this.sbI?'SB':'BB';div.appendChild(bl);}
