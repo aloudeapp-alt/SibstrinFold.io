@@ -181,7 +181,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:#c8e
 .cinp-row input{flex:1;background:rgba(0,15,10,.9);border:1px solid rgba(0,255,231,.17);border-radius:7px;color:#c8ede8;padding:.35rem .55rem;font-size:.82rem;outline:none;min-width:0}
 .cinp-row input:focus{border-color:var(--neon)}
 .csend{background:transparent;border:1.5px solid var(--neon);border-radius:7px;color:var(--neon);padding:0 .55rem;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap}
-.chat-fab{position:fixed;bottom:120px;right:10px;width:38px;height:38px;border-radius:50%;background:rgba(0,255,231,.1);border:1.5px solid var(--neon);color:var(--neon);font-size:1.05rem;cursor:pointer;z-index:50;display:none;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(0,255,231,.2)}
+.chat-fab{position:fixed;bottom:18px;right:14px;width:46px;height:46px;border-radius:50%;background:rgba(0,255,231,.1);border:1.5px solid var(--neon);color:var(--neon);font-size:1.2rem;cursor:pointer;z-index:90;display:none;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(0,255,231,.2)}
+.ptt-fab{position:fixed;bottom:74px;right:14px;width:46px;height:46px;border-radius:50%;background:#003d30;border:2px solid var(--neon);color:var(--neon);font-size:1.25rem;cursor:pointer;z-index:90;display:none;align-items:center;justify-content:center;box-shadow:0 0 10px rgba(0,255,231,.45);touch-action:none}
+.ptt-fab.active{background:var(--neon);color:#012;box-shadow:0 0 18px var(--neon)}
+.ptt-fab.peer-talking{background:#3d0018;border-color:var(--pink);color:var(--pink)}
 .cbadge{position:absolute;top:-2px;right:-2px;background:var(--pink);color:#fff;font-size:.52rem;border-radius:50%;width:14px;height:14px;display:none;align-items:center;justify-content:center;font-weight:800}
 
 /* OVERLAYS */
@@ -246,7 +249,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:#c8e
 <body>
 <div id="toast" class="toast"></div>
 <div style="position:fixed;bottom:6px;left:8px;z-index:999;pointer-events:none">
-  <span style="font-size:.48rem;color:rgba(0,255,231,.22);letter-spacing:1.5px;text-transform:uppercase;font-family:monospace">SIBSTRIN FOLD · v46</span>
+  <span style="font-size:.48rem;color:rgba(0,255,231,.22);letter-spacing:1.5px;text-transform:uppercase;font-family:monospace">SIBSTRIN FOLD · v47</span>
 </div>
 
 <!-- LOBBY -->
