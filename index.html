@@ -56,6 +56,17 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 .preset-btn span{font-size:.54rem;color:var(--txt-dim);font-weight:400;opacity:.7}
 .preset-btn.sel{border-color:var(--gold);background:rgba(212,175,55,.1);color:var(--gold)}
 .preset-btn.sel span{color:var(--gold-lt)}
+.mode-tabs{display:flex;gap:4px}
+.mode-tab{flex:1;background:transparent;border:none;border-radius:9px;color:var(--txt-dim);padding:.6rem .3rem;cursor:pointer;font-family:'Segoe UI',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.5px;transition:.14s}
+.mode-tab.sel{background:var(--gold-grad);color:#1a1305;font-weight:700}
+.ptable{display:flex;align-items:center;gap:10px;background:#0a0805;border:1px solid var(--gold-dk);border-radius:11px;padding:.65rem .8rem;margin-bottom:.5rem;cursor:pointer;transition:.14s;font-family:'Segoe UI',sans-serif}
+.ptable:hover{border-color:var(--gold);background:rgba(250,222,129,.06)}
+.ptable:active{transform:scale(.98)}
+.pt-icon{font-size:1.6rem;flex-shrink:0}
+.pt-info{flex:1}
+.pt-name{font-size:.95rem;color:var(--txt);font-weight:700;font-family:'Georgia',serif}
+.pt-sub{font-size:.66rem;color:var(--txt-dim)}
+.pt-go{color:var(--gold);font-size:1.1rem}
 
 /* ── TOP BAR ── */
 .tbar{display:flex;justify-content:space-between;align-items:flex-start;padding:.7rem .8rem .3rem;flex-shrink:0;position:relative;z-index:20}
@@ -296,7 +307,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v63</div>
+<div class="ver">SIBSTRIN FOLD · v64</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -321,7 +332,43 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
       <div id="av-prev" style="display:none;text-align:center;margin-top:3px"><img id="av-img" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)"></div>
     </div>
   </div>
-  <div class="lc"><h3>Host a Table</h3>
+  <div class="lc" style="padding:.5rem">
+    <div class="mode-tabs">
+      <button class="mode-tab sel" data-mode="public">♛ Public</button>
+      <button class="mode-tab" data-mode="join">♣ Join</button>
+      <button class="mode-tab" data-mode="host">♠ Host</button>
+    </div>
+  </div>
+
+  <!-- PUBLIC TABLES -->
+  <div class="lc mode-panel" id="panel-public">
+    <h3>Public Tables</h3>
+    <p style="font-size:.68rem;color:var(--txt-dim);margin-bottom:.7rem;font-family:'Segoe UI',sans-serif">Jump straight in — no code needed. First player hosts, others join automatically.</p>
+    <div class="ptable" data-code="SIBFOLD-BRONZE" data-sb="25" data-bb="50" data-bi="2000">
+      <div class="pt-icon" style="color:#cd7f32">🥉</div>
+      <div class="pt-info"><div class="pt-name">Bronze Table</div><div class="pt-sub">Blinds 25/50 · Buy-in 2,000</div></div>
+      <div class="pt-go">▶</div>
+    </div>
+    <div class="ptable" data-code="SIBFOLD-SILVER" data-sb="50" data-bb="100" data-bi="5000">
+      <div class="pt-icon" style="color:#c0c0c0">🥈</div>
+      <div class="pt-info"><div class="pt-name">Silver Table</div><div class="pt-sub">Blinds 50/100 · Buy-in 5,000</div></div>
+      <div class="pt-go">▶</div>
+    </div>
+    <div class="ptable" data-code="SIBFOLD-GOLD" data-sb="100" data-bb="200" data-bi="10000">
+      <div class="pt-icon" style="color:var(--gold)">🥇</div>
+      <div class="pt-info"><div class="pt-name">Gold Table</div><div class="pt-sub">Blinds 100/200 · Buy-in 10,000</div></div>
+      <div class="pt-go">▶</div>
+    </div>
+  </div>
+
+  <!-- JOIN -->
+  <div class="lc mode-panel" id="panel-join" style="display:none"><h3>Join a Table</h3>
+    <div class="f"><label>Room Code</label><input id="j-code" placeholder="0000" maxlength="6" style="letter-spacing:5px;font-size:1.3rem;text-align:center"></div>
+    <button class="btn bo" id="btn-join">Join Table ♣</button>
+  </div>
+
+  <!-- HOST -->
+  <div class="lc mode-panel" id="panel-host" style="display:none"><h3>Host a Table</h3>
     <div style="font-size:.62rem;color:var(--txt-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem;font-family:'Segoe UI',sans-serif">Quick Preset</div>
     <div style="display:flex;gap:5px;margin-bottom:.7rem">
       <button class="preset-btn" data-preset="fast">⚡ Fast<span>~45 min</span></button>
@@ -338,10 +385,6 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
     </div>
     <div class="f" style="margin-bottom:.6rem"><label>Table name</label><input id="h-rn" placeholder="Friday Night"></div>
     <button class="btn bg-gold" id="btn-host">Create Table ♠</button>
-  </div>
-  <div class="lc" style="margin-bottom:1rem"><h3>Join a Table</h3>
-    <div class="f"><label>Room Code</label><input id="j-code" placeholder="0000" maxlength="6" style="letter-spacing:5px;font-size:1.3rem;text-align:center"></div>
-    <button class="btn bo" id="btn-join">Join Table ♣</button>
   </div>
 </div>
 
@@ -682,6 +725,26 @@ var G={
         $('h-sb').value=p.sb;$('h-bb').value=p.bb;$('h-bi').value=p.bi;$('h-tm').value=p.tm;$('h-br').value=p.br;
       });
     }
+    // Mode tabs
+    var tabs=document.querySelectorAll('.mode-tab');
+    for(var ti=0;ti<tabs.length;ti++){
+      tabs[ti].addEventListener('click',function(){
+        var all=document.querySelectorAll('.mode-tab');for(var k=0;k<all.length;k++)all[k].classList.remove('sel');
+        this.classList.add('sel');
+        var m=this.dataset.mode;
+        $('panel-public').style.display=m==='public'?'block':'none';
+        $('panel-join').style.display=m==='join'?'block':'none';
+        $('panel-host').style.display=m==='host'?'block':'none';
+      });
+    }
+    // Public tables
+    var ptables=document.querySelectorAll('.ptable');
+    for(var pi=0;pi<ptables.length;pi++){
+      ptables[pi].addEventListener('click',function(){
+        self.saveProfile();
+        self.joinPublic(this.dataset.code,{sb:+this.dataset.sb,bb:+this.dataset.bb,bi:+this.dataset.bi});
+      });
+    }
   },
 
   buildAvatarGrid:function(){
@@ -710,6 +773,44 @@ var G={
     this.peer=new Peer(code,{debug:0});
     this.peer.on('open',function(id){self.myId=id;self.pl=[self.mkP(id,nick,self.myAv,self.myImg,self.cfg.bi)];self.myI=0;self.eliminated=[];self.enterGame();});
     this.peer.on('connection',function(conn){self.onConn(conn);});
+    this.peer.on('error',function(e){toast('Error: '+e.type);});
+  },
+  joinPublic:function(code,cfg){
+    var self=this;
+    toast('Connecting to table…');
+    // Try to become host of this fixed code
+    this.peer=new Peer(code,{debug:0});
+    this.peer.on('open',function(id){
+      // Success → we are the host of this public table
+      self.myId=id;self.host=true;self.code=code;
+      self.cfg={sb:cfg.sb,bb:cfg.bb,bi:cfg.bi,tm:30,br:12,mp:9,rn:'Public'};
+      self.pl=[self.mkP(id,self.nick(),self.myAv,self.myImg,self.cfg.bi)];
+      self.myI=0;self.eliminated=[];
+      self.enterGame();
+      toast('You are hosting this table');
+    });
+    this.peer.on('connection',function(conn){self.onConn(conn);});
+    this.peer.on('error',function(e){
+      if(e.type==='unavailable-id'){
+        // Code taken → a host already exists → join as client
+        self.peer.destroy();
+        self._joinPublicClient(code,cfg);
+      } else {
+        toast('Error: '+e.type);
+      }
+    });
+  },
+  _joinPublicClient:function(code,cfg){
+    var self=this;
+    this.host=false;
+    this.cfg={sb:cfg.sb,bb:cfg.bb,bi:cfg.bi,tm:30,br:12,mp:9,rn:'Public'};
+    this.peer=new Peer({debug:0});
+    this.peer.on('open',function(id){
+      self.myId=id;
+      var conn=self.peer.connect(code,{reliable:true});
+      conn.on('open',function(){self.conns.push(conn);conn.send({type:'join',id:id,name:self.nick(),av:self.myAv,img:self.myImg});self.onConn(conn);toast('Joined table');});
+      conn.on('error',function(){toast('Could not join — try again');});
+    });
     this.peer.on('error',function(e){toast('Error: '+e.type);});
   },
   joinRoom:function(){
