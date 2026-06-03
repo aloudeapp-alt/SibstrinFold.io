@@ -62,11 +62,13 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 .ptable{display:flex;align-items:center;gap:10px;background:#0a0805;border:1px solid var(--gold-dk);border-radius:11px;padding:.65rem .8rem;margin-bottom:.5rem;cursor:pointer;transition:.14s;font-family:'Segoe UI',sans-serif}
 .ptable:hover{border-color:var(--gold);background:rgba(250,222,129,.06)}
 .ptable:active{transform:scale(.98)}
-.pt-icon{font-size:1.6rem;flex-shrink:0}
+.pt-tier{font-size:.62rem;font-weight:800;letter-spacing:1.5px;flex-shrink:0;width:48px;font-family:'Segoe UI',sans-serif}
 .pt-info{flex:1}
 .pt-name{font-size:.95rem;color:var(--txt);font-weight:700;font-family:'Georgia',serif}
 .pt-sub{font-size:.66rem;color:var(--txt-dim)}
-.pt-go{color:var(--gold);font-size:1.1rem}
+.pt-count{font-size:.66rem;color:var(--txt-dim);text-align:right;min-width:54px;font-family:'Segoe UI',sans-serif}
+.pt-count.live{color:#5fd98a}
+.pt-count b{display:block;font-size:.92rem;color:var(--gold);font-weight:700}
 
 /* ── TOP BAR ── */
 .tbar{display:flex;justify-content:space-between;align-items:flex-start;padding:.7rem .8rem .3rem;flex-shrink:0;position:relative;z-index:20}
@@ -307,7 +309,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v64</div>
+<div class="ver">SIBSTRIN FOLD · v65</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -334,9 +336,9 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
   </div>
   <div class="lc" style="padding:.5rem">
     <div class="mode-tabs">
-      <button class="mode-tab sel" data-mode="public">♛ Public</button>
-      <button class="mode-tab" data-mode="join">♣ Join</button>
-      <button class="mode-tab" data-mode="host">♠ Host</button>
+      <button class="mode-tab sel" data-mode="public">Public</button>
+      <button class="mode-tab" data-mode="join">Join</button>
+      <button class="mode-tab" data-mode="host">Host</button>
     </div>
   </div>
 
@@ -345,19 +347,19 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
     <h3>Public Tables</h3>
     <p style="font-size:.68rem;color:var(--txt-dim);margin-bottom:.7rem;font-family:'Segoe UI',sans-serif">Jump straight in — no code needed. First player hosts, others join automatically.</p>
     <div class="ptable" data-code="SIBFOLD-BRONZE" data-sb="25" data-bb="50" data-bi="2000">
-      <div class="pt-icon" style="color:#cd7f32">🥉</div>
+      <div class="pt-tier" style="color:#cd7f32">BRONZE</div>
       <div class="pt-info"><div class="pt-name">Bronze Table</div><div class="pt-sub">Blinds 25/50 · Buy-in 2,000</div></div>
-      <div class="pt-go">▶</div>
+      <div class="pt-count" id="cnt-SIBFOLD-BRONZE">—</div>
     </div>
     <div class="ptable" data-code="SIBFOLD-SILVER" data-sb="50" data-bb="100" data-bi="5000">
-      <div class="pt-icon" style="color:#c0c0c0">🥈</div>
+      <div class="pt-tier" style="color:#c0c0c0">SILVER</div>
       <div class="pt-info"><div class="pt-name">Silver Table</div><div class="pt-sub">Blinds 50/100 · Buy-in 5,000</div></div>
-      <div class="pt-go">▶</div>
+      <div class="pt-count" id="cnt-SIBFOLD-SILVER">—</div>
     </div>
     <div class="ptable" data-code="SIBFOLD-GOLD" data-sb="100" data-bb="200" data-bi="10000">
-      <div class="pt-icon" style="color:var(--gold)">🥇</div>
+      <div class="pt-tier" style="color:var(--gold)">GOLD</div>
       <div class="pt-info"><div class="pt-name">Gold Table</div><div class="pt-sub">Blinds 100/200 · Buy-in 10,000</div></div>
-      <div class="pt-go">▶</div>
+      <div class="pt-count" id="cnt-SIBFOLD-GOLD">—</div>
     </div>
   </div>
 
@@ -371,9 +373,9 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
   <div class="lc mode-panel" id="panel-host" style="display:none"><h3>Host a Table</h3>
     <div style="font-size:.62rem;color:var(--txt-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem;font-family:'Segoe UI',sans-serif">Quick Preset</div>
     <div style="display:flex;gap:5px;margin-bottom:.7rem">
-      <button class="preset-btn" data-preset="fast">⚡ Fast<span>~45 min</span></button>
-      <button class="preset-btn sel" data-preset="standard">♦ Standard<span>~60 min</span></button>
-      <button class="preset-btn" data-preset="deep">♛ Deep<span>~90 min</span></button>
+      <button class="preset-btn" data-preset="fast">Fast<span>~45 min</span></button>
+      <button class="preset-btn sel" data-preset="standard">Standard<span>~60 min</span></button>
+      <button class="preset-btn" data-preset="deep">Deep<span>~90 min</span></button>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-bottom:.5rem">
       <div class="f"><label>Small Blind</label><input id="h-sb" type="number" value="50" min="1"></div>
@@ -745,6 +747,39 @@ var G={
         self.joinPublic(this.dataset.code,{sb:+this.dataset.sb,bb:+this.dataset.bb,bi:+this.dataset.bi});
       });
     }
+    // Probe public tables for live player counts
+    this.probePublicTables();
+  },
+
+  probePublicTables:function(){
+    var self=this;
+    var codes=['SIBFOLD-BRONZE','SIBFOLD-SILVER','SIBFOLD-GOLD'];
+    codes.forEach(function(code){
+      self._probeOne(code);
+    });
+    // refresh every 8s while on lobby
+    if(!this._probeInt){
+      this._probeInt=setInterval(function(){
+        if($('s-lobby').classList.contains('active'))codes.forEach(function(c){self._probeOne(c);});
+      },8000);
+    }
+  },
+  _probeOne:function(code){
+    var el=$('cnt-'+code);if(!el)return;
+    var probe=new Peer({debug:0});
+    var done=false;
+    var finish=function(html,live){if(done)return;done=true;el.innerHTML=html;el.className='pt-count'+(live?' live':'');try{probe.destroy();}catch(e){}};
+    probe.on('open',function(){
+      var conn=probe.connect(code,{reliable:true});
+      var to=setTimeout(function(){finish('Empty',false);},3500);
+      conn.on('open',function(){conn.send({type:'probe'});});
+      conn.on('data',function(d){if(d&&d.type==='probe-result'){clearTimeout(to);finish('<b>'+d.count+'</b>'+(d.count===1?'player':'players'),true);}});
+      conn.on('error',function(){clearTimeout(to);finish('Empty',false);});
+    });
+    probe.on('error',function(e){
+      // can't connect → no host → table empty
+      finish('Empty',false);
+    });
   },
 
   buildAvatarGrid:function(){
@@ -829,6 +864,11 @@ var G={
 
   onData:function(conn,d){
     var self=this;
+    if(d.type==='probe'){
+      // someone is checking how many players are at this table
+      if(this.host){var cnt=this.pl.filter(function(p){return !p.busted&&!p.disconnected;}).length;try{conn.send({type:'probe-result',count:cnt,max:this.cfg.mp});}catch(e){}}
+      return;
+    }
     if(d.type==='join'){
       var existing=null;
       for(var i=0;i<this.pl.length;i++){if(this.pl[i].name===d.name&&(this.pl[i].disconnected||this.pl[i].id===d.id)){existing=this.pl[i];break;}}
