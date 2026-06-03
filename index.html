@@ -309,7 +309,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v66</div>
+<div class="ver">SIBSTRIN FOLD · v67</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -487,7 +487,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 <div class="ovl" id="sp-ovl">
   <div class="oh"><span>☰ Menu</span><button class="ib" id="sp-x">✕</button></div>
   <div class="ob" id="sp-body">
-    <div style="margin-bottom:.85rem"><button class="btn bo" id="btn-mystats" style="height:38px;font-size:.75rem;margin-bottom:.5rem">📊 My Stats</button><button class="btn bo" id="btn-lb2" style="height:38px;font-size:.75rem;margin-bottom:.5rem">🏆 Leaderboard</button><button class="btn bo" id="btn-sound" style="height:38px;font-size:.75rem;margin-bottom:.5rem">🔊 Sound: ON</button><button class="btn bo" id="btn-hhtog" style="height:38px;font-size:.75rem">📋 Toggle Hand Log</button></div>
+    <div style="margin-bottom:.85rem"><button class="btn bo" id="btn-mystats" style="height:38px;font-size:.75rem;margin-bottom:.5rem">📊 My Stats</button><button class="btn bo" id="btn-lb2" style="height:38px;font-size:.75rem;margin-bottom:.5rem">🏆 Leaderboard</button><button class="btn bo" id="btn-sound" style="height:38px;font-size:.75rem;margin-bottom:.5rem">🔊 Sound: ON</button><button class="btn bo" id="btn-wake" style="height:38px;font-size:.75rem;margin-bottom:.5rem">📱 Keep Screen On: ON</button><button class="btn bo" id="btn-hhtog" style="height:38px;font-size:.75rem">📋 Toggle Hand Log</button></div>
     <div style="margin-bottom:.85rem;padding-bottom:.85rem;border-bottom:1px solid var(--gold-dk)">
       <div style="font-size:.62rem;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.45rem">🎙 Push-to-Talk Key</div>
       <div style="font-size:.68rem;color:var(--txt-dim);margin-bottom:.5rem">Assign a key to talk (desktop). Default: Space</div>
@@ -579,6 +579,29 @@ var SFX={
   turn:function(){this.tone(660,0.12,'sine',0.13);},
   win:function(){this.tone(523,0.15,'triangle',0.14);this.tone(659,0.15,'triangle',0.14,0.13);this.tone(784,0.25,'triangle',0.15,0.26);},
   lose:function(){this.tone(330,0.2,'sine',0.1);this.tone(247,0.3,'sine',0.1,0.18);}
+};
+
+/* ── SCREEN WAKE LOCK (keep phone screen awake during play) ── */
+var WAKE={
+  lock:null,
+  enable:function(){
+    var self=this;
+    if(!('wakeLock'in navigator))return;
+    navigator.wakeLock.request('screen').then(function(l){
+      self.lock=l;
+      l.addEventListener('release',function(){self.lock=null;});
+    }).catch(function(){});
+  },
+  release:function(){if(this.lock){try{this.lock.release();}catch(e){}this.lock=null;}},
+  // re-acquire when tab becomes visible again (lock is auto-released on tab hide)
+  initVisibility:function(){
+    var self=this;
+    document.addEventListener('visibilitychange',function(){
+      if(document.visibilityState==='visible'&&self._wanted&&!self.lock)self.enable();
+    });
+  },
+  start:function(){this._wanted=true;this.enable();},
+  stop:function(){this._wanted=false;this.release();}
 };
 
 var SUITS=['♠','♥','♦','♣'],RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A'],REDS=['♥','♦'];
@@ -924,6 +947,7 @@ var G={
     if(this.host){$('host-deal-wrap').style.display='block';this.setupSP();}
     if(!this._bt)this.startBT();
     this.renderWaiting();this.updateSpecBanner();this.startHeartbeat();
+    WAKE.initVisibility();WAKE.start();
   },
   showTable:function(){$('wlobby').style.display='none';$('gtable').style.display='flex';},
   renderWaiting:function(){$('wpl').innerHTML=this.pl.map(function(p){return'<div class="pchip">'+p.av+' '+p.name+'</div>';}).join('');},
@@ -993,6 +1017,7 @@ var G={
     $('stats-x').onclick=function(){$('stats-ovl').classList.remove('open');};
     $('btn-hhtog').onclick=function(){$('hhlog').classList.toggle('vis');};
     $('btn-sound').onclick=function(){SFX.enabled=!SFX.enabled;$('btn-sound').textContent=SFX.enabled?'🔊 Sound: ON':'🔇 Sound: OFF';if(SFX.enabled)SFX.chip();};
+    $('btn-wake').onclick=function(){if(WAKE._wanted){WAKE.stop();$('btn-wake').textContent='📱 Keep Screen On: OFF';}else{WAKE.start();$('btn-wake').textContent='📱 Keep Screen On: ON';}};
     $('btn-leave').onclick=function(){if(confirm('Leave table?'))location.reload();};
     $('copy-code').onclick=function(){navigator.clipboard.writeText(self.code).then(function(){toast('Copied: '+self.code);});};
     $('sd-next').onclick=function(){if(!self.host)return;$('sdovl').classList.remove('show');if(self._sdTimer)clearInterval(self._sdTimer);self.startHand();};
