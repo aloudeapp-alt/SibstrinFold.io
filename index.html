@@ -12,8 +12,8 @@
    Edit colors here ↓ to re-theme everything
    ═══════════════════════════════════════════ */
 :root{
-  --gold:#d4af37;--gold-lt:#f0d878;--gold-dk:#8a6d1f;
-  --gold-grad:linear-gradient(180deg,#f5e08a,#c9a23a 45%,#8a6d1f);
+  --gold:#fade81;--gold-lt:#fff0b8;--gold-dk:#a8842f;
+  --gold-grad:linear-gradient(180deg,#fff3c0,#fade81 45%,#a8842f);
   --felt:#1f5c3d;--felt-dk:#0e3a25;--felt-edge:#0a2418;
   --bg:#0a0805;--bg2:#141009;
   --panel:#16120a;--panel-lt:#211a0e;
@@ -114,18 +114,18 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 .felt-logo .fl-1{font-size:1.5rem;letter-spacing:7px;color:rgba(212,175,55,.45);font-weight:400;line-height:1.2}
 .felt-logo .fl-2{font-size:1.1rem;letter-spacing:9px;color:rgba(212,175,55,.35);font-weight:400}
 
-.phase-lbl{position:absolute;top:30%;left:50%;transform:translateX(-50%);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--txt-dim);z-index:6;pointer-events:none;text-align:center;font-family:'Segoe UI',sans-serif}
+.phase-lbl{position:absolute;top:20%;left:50%;transform:translateX(-50%);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--txt-dim);z-index:14;pointer-events:none;text-align:center;font-family:'Segoe UI',sans-serif}
 .phase-lbl b{display:block;font-size:.9rem;color:var(--gold);letter-spacing:4px;margin-top:2px;font-weight:400}
 
 .seats-cont{position:absolute;inset:0}
 
 /* pot */
-.pot-wrap{position:absolute;top:22%;left:50%;transform:translateX(-50%);text-align:center;z-index:8}
+.pot-wrap{position:absolute;top:30%;left:50%;transform:translateX(-50%);text-align:center;z-index:15}
 .pot-lbl{font-size:.58rem;color:var(--txt-dim);letter-spacing:3px;text-transform:uppercase;font-family:'Segoe UI',sans-serif}
 .pot-amt{font-size:1.35rem;color:var(--gold);font-weight:700;line-height:1.1}
 
 /* community cards centered */
-.community{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);z-index:9}
+.community{position:absolute;top:46%;left:50%;transform:translate(-50%,-50%);z-index:9}
 .cc{display:flex;gap:5px;justify-content:center}
 
 /* ── CARDS ── */
@@ -165,7 +165,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 /* blind chip + bet (placed toward center) */
 .seat-bet{position:absolute;font-size:.62rem;color:var(--gold);font-weight:700;background:rgba(10,8,5,.9);border:1px solid var(--gold-dk);border-radius:12px;padding:1px 7px;white-space:nowrap;display:flex;align-items:center;gap:3px;font-family:'Segoe UI',sans-serif;z-index:22}
 .bet-chip-ic{width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#e84030,#a02018);border:1.5px dashed rgba(255,255,255,.5);flex-shrink:0}
-.sblind{position:absolute;top:50px;left:50%;transform:translateX(-50%);font-size:.5rem;background:var(--gold-dk);color:#1a1305;border-radius:7px;padding:1px 6px;font-weight:800;font-family:'Segoe UI',sans-serif;z-index:23}
+.sblind{position:absolute;top:0;right:-4px;font-size:.5rem;background:var(--gold-dk);color:#1a1305;border-radius:7px;padding:1px 5px;font-weight:800;font-family:'Segoe UI',sans-serif;z-index:24}
 .seat-cards{display:flex;gap:2px;margin-top:1px}
 
 /* my hole cards beside avatar */
@@ -296,7 +296,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v61</div>
+<div class="ver">SIBSTRIN FOLD · v62</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -1104,8 +1104,8 @@ var G={
     $('plbl').innerHTML='ROUND<b>'+this.phase.toUpperCase()+'</b>';
   },
   seatPos:function(count){
-    var positions=[];var cx=50,cy=46,rx=46,ry=40;
-    for(var i=0;i<count;i++){var a=Math.PI*1.1+(Math.PI*1.8-Math.PI*1.1)*(count===1?.5:i/(count-1));positions.push({left:(cx+rx*Math.cos(a))+'%',top:(cy+ry*Math.sin(a))+'%'});}
+    var positions=[];var cx=50,cy=44,rx=44,ry=37;
+    for(var i=0;i<count;i++){var a=Math.PI*1.15+(Math.PI*1.7-Math.PI*1.15)*(count===1?.5:i/(count-1));positions.push({left:(cx+rx*Math.cos(a))+'%',top:(cy+ry*Math.sin(a))+'%'});}
     return positions;
   },
   _buildSeat:function(p,isD,isA,masked){
