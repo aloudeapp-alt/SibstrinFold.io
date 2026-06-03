@@ -309,7 +309,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v68</div>
+<div class="ver">SIBSTRIN FOLD · v69</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -468,6 +468,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
           <button class="eb" onclick="G.emoji('🃏')">🃏</button><button class="eb" onclick="G.emoji('💎')">💎</button>
         </div>
         <div class="cmsg-list" id="cmsgs"></div>
+        <div class="quick-chat-row" id="quick-grid"></div>
         <div class="cinp-row"><input id="cinp" placeholder="Say something…" maxlength="120"><button class="csend" id="csend">Send</button></div>
       </div>
     </div>
@@ -475,10 +476,6 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </div>
 
 <button class="ptt-fab" id="ptt-btn" title="Hold to Talk">🎙</button>
-<button class="quick-fab" id="quick-btn" title="Quick Chat">💬⚡</button>
-<div class="quick-panel" id="quick-panel">
-  <div class="quick-grid" id="quick-grid"></div>
-</div>
 <div class="ptt-indic" id="ptt-indicator"><div id="ptt-dot" style="width:8px;height:8px;border-radius:50%;background:var(--gold)"></div><span id="ptt-who" style="font-size:.75rem;color:var(--gold);font-weight:700;letter-spacing:1px">TALKING</span></div>
 
 <!-- MY STATS -->
@@ -956,7 +953,6 @@ var G={
     $('g-blinds').textContent=this.cfg.sb+' / '+this.cfg.bb;
     $('cfab').style.display='flex';
     var pb=$('ptt-btn');if(pb)pb.style.display='flex';
-    var qb=$('quick-btn');if(qb)qb.style.display='flex';
     try{if(window.Notification&&Notification.permission==='default')Notification.requestPermission();}catch(e){}
     PTT.init(this.peer,this.conns,this.nick());
     if(this.host){$('host-deal-wrap').style.display='block';this.setupSP();}
@@ -1080,12 +1076,11 @@ var G={
         else{self.autoAction=mode;var all=document.querySelectorAll('.auto-btn');for(var k=0;k<all.length;k++)all[k].classList.remove('sel');this.classList.add('sel');}
       });
     }
-    // Quick chat
-    var QUICK=['Nice hand! 👏','All in baby 🔥','So lucky 🍀','Bluff! 🤔','Good game 🤝','Fold pls 😅','Let\'s go! 💪','Brutal 💀','Easy money 😎','Respect 👑','One more? 🃏','Unlucky 😤'];
+    // Quick chat phrases inside chat window
+    var QUICK=['Nice hand! 👏','All in baby 🔥','So lucky 🍀','Bluff! 🤔','Good game 🤝','Let\'s go! 💪','Brutal 💀','Respect 👑'];
     var qg=$('quick-grid');
     if(qg){qg.innerHTML=QUICK.map(function(t){return'<div class="quick-item">'+t+'</div>';}).join('');
-      qg.addEventListener('click',function(e){var it=e.target.closest('.quick-item');if(!it)return;self.emoji(it.textContent);$('quick-panel').classList.remove('open');});}
-    $('quick-btn').onclick=function(){$('quick-panel').classList.toggle('open');};
+      qg.addEventListener('click',function(e){var it=e.target.closest('.quick-item');if(!it)return;self.emoji(it.textContent);});}
   },
   bindChat:function(){
     var self=this;
