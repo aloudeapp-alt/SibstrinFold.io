@@ -309,7 +309,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v70</div>
+<div class="ver">SIBSTRIN FOLD · v71</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -1154,22 +1154,21 @@ var G={
   },
   nextPhase:function(){
     clearInterval(this.tmr);this.pl.forEach(function(p){if(!p.folded&&!p.allIn&&!p.busted)p.acted=false;p.bet=0;});
+    var alive=this.pl.filter(function(p){return !p.folded&&!p.busted;});
+    var allInRunout=alive.length>0&&alive.every(function(p){return p.allIn||p.chips===0;});
     var newCards=null;
     if(this.phase==='preflop'){newCards=[this.deck.pop(),this.deck.pop(),this.deck.pop()];this.board=newCards.slice();this.phase='flop';}
     else if(this.phase==='flop'){newCards=[this.deck.pop()];this.board.push(newCards[0]);this.phase='turn';}
     else if(this.phase==='turn'){newCards=[this.deck.pop()];this.board.push(newCards[0]);this.phase='river';}
-    else{
-      // Wait for the final board card flip animation to finish before showing showdown
-      var cc2=$('cc');var numCards=cc2?cc2.children.length:0;
-      var animWait=numCards*340+600;
-      var self2=this;
-      setTimeout(function(){self2.showdown();},animWait);
-      return;
-    }
+    else{this.showdown();return;}
     var first=this.dealer;for(var i=0;i<this.pl.length;i++){first=(first+1)%this.pl.length;if(!this.pl[first].folded&&!this.pl[first].busted)break;}
     this.cur=first;this.hlog('— '+this.phase.toUpperCase()+' —');
     this.bcDeal(newCards);
-    this.animBoard(newCards,function(){G.renderAll();if(G.isMe())G.startTimer();else G.hostTimer();});
+    if(allInRunout){
+      this.animBoard(newCards,function(){G.renderAll();setTimeout(function(){G.nextPhase();},1200);});
+    } else {
+      this.animBoard(newCards,function(){G.renderAll();if(G.isMe())G.startTimer();else G.hostTimer();});
+    }
   },
   animBoard:function(newCards,cb){
     if(!newCards||!newCards.length){if(cb)cb();return;}
