@@ -232,7 +232,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 .csend{background:var(--gold-grad);border:none;border-radius:8px;color:#1a1305;padding:0 .7rem;font-size:.72rem;font-weight:700;cursor:pointer}
 
 /* ── PTT FAB ── */
-.ptt-fab{position:fixed;bottom:148px;right:14px;width:46px;height:46px;border-radius:50%;background:#1a140a;border:2px solid var(--gold);color:var(--gold);font-size:1.25rem;cursor:pointer;z-index:95;display:none;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(212,175,55,.3);touch-action:none}
+.ptt-fab{position:fixed;bottom:210px;right:14px;width:46px;height:46px;border-radius:50%;background:#1a140a;border:2px solid var(--gold);color:var(--gold);font-size:1.25rem;cursor:pointer;z-index:95;display:none;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(212,175,55,.3);touch-action:none}
 
 /* ── OVERLAYS ── */
 .ovl{position:fixed;inset:0;background:rgba(8,6,3,.97);z-index:200;display:none;flex-direction:column;font-family:'Segoe UI',sans-serif}
@@ -309,7 +309,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v69</div>
+<div class="ver">SIBSTRIN FOLD · v70</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -434,11 +434,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
         <div class="my-seat-row" id="my-seat-row"></div>
         <div class="tbar2"><div class="tfill" id="tfill" style="width:100%"></div></div>
         <div class="bot" id="bot">
-          <div class="auto-row" id="auto-row">
-            <button class="auto-btn" data-auto="checkfold">Check/Fold</button>
-            <button class="auto-btn" data-auto="callany">Call Any</button>
-            <button class="auto-btn" data-auto="check">Check</button>
-          </div>
+          <div class="auto-row" id="auto-row" style="display:none"></div>
           <div class="raise-panel" id="rp">
             <div class="raise-ctl">
               <button class="rc-minmax" id="rc-min">MIN</button>
@@ -468,7 +464,6 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
           <button class="eb" onclick="G.emoji('🃏')">🃏</button><button class="eb" onclick="G.emoji('💎')">💎</button>
         </div>
         <div class="cmsg-list" id="cmsgs"></div>
-        <div class="quick-chat-row" id="quick-grid"></div>
         <div class="cinp-row"><input id="cinp" placeholder="Say something…" maxlength="120"><button class="csend" id="csend">Send</button></div>
       </div>
     </div>
@@ -633,22 +628,40 @@ function evalHand(hole,board){
   var suits=all.map(function(c){return c.s;});
   var rc={},sc={};
   ranks.forEach(function(r){rc[r]=(rc[r]||0)+1;});suits.forEach(function(s){sc[s]=(sc[s]||0)+1;});
-  var flush=Object.keys(sc).some(function(k){return sc[k]>=5;});
+  var flushSuit=null;Object.keys(sc).forEach(function(k){if(sc[k]>=5)flushSuit=k;});
+  var flush=flushSuit!==null;
   var sr=Object.keys(rc).map(Number).sort(function(a,b){return a-b;});
-  var str=false;for(var i=0;i<=sr.length-5;i++){var ok=true;for(var k=0;k<4;k++)if(sr[i+k+1]-sr[i+k]!==1)ok=false;if(ok)str=true;}
-  var cnts=Object.keys(rc).map(function(k){return rc[k];});
-  var f4=cnts.filter(function(v){return v>=4;}).length;
-  var f3=cnts.filter(function(v){return v>=3;}).length;
-  var f2=cnts.filter(function(v){return v>=2;}).length;
-  if(str&&flush)return{rank:8,name:'Straight Flush'};
-  if(f4)return{rank:7,name:'Four of a Kind'};
-  if(f3&&f2>=2)return{rank:6,name:'Full House'};
-  if(flush)return{rank:5,name:'Flush'};
-  if(str)return{rank:4,name:'Straight'};
-  if(f3)return{rank:3,name:'Three of a Kind'};
-  if(f2>=2)return{rank:2,name:'Two Pair'};
-  if(f2===1)return{rank:1,name:'One Pair'};
-  return{rank:0,name:'High Card '+RANKS[Math.max.apply(null,ranks)]};
+  // Check straight (including A-low wheel: A=12 can act as -1)
+  var strHigh=-1;
+  var srUniq=sr.slice();
+  // Add ace as low (rank -1 represents low ace)
+  if(srUniq.indexOf(12)>=0){var wh=[-1].concat(srUniq);for(var wi=0;wi<=wh.length-5;wi++){var wok=true;for(var wk=0;wk<4;wk++)if(wh[wi+wk+1]-wh[wi+wk]!==1)wok=false;if(wok&&wh[wi+4]>strHigh)strHigh=wh[wi+4];}};
+  for(var i=0;i<=srUniq.length-5;i++){var ok=true;for(var k=0;k<4;k++)if(srUniq[i+k+1]-srUniq[i+k]!==1)ok=false;if(ok&&srUniq[i+4]>strHigh)strHigh=srUniq[i+4];}
+  var str=strHigh>=0;
+  // For flush: filter to flush suit cards
+  var flushRanks=flush?all.filter(function(c){return c.s===flushSuit;}).map(function(c){return RANKS.indexOf(c.r);}).sort(function(a,b){return b-a;}).slice(0,5):[];
+  var flushStr=false;var flushStrHigh=-1;
+  if(flush){var fsr=flushRanks.slice().sort(function(a,b){return a-b;});for(var fi=0;fi<=fsr.length-5;fi++){var fok=true;for(var fk=0;fk<4;fk++)if(fsr[fi+fk+1]-fsr[fi+fk]!==1)fok=false;if(fok&&fsr[fi+4]>flushStrHigh)flushStrHigh=fsr[fi+4];}flushStr=flushStrHigh>=0;}
+  // Group by count: sorted desc by count then rank
+  var groups=Object.keys(rc).map(function(r){return{r:+r,n:rc[r]};}).sort(function(a,b){return b.n-a.n||b.r-a.r;});
+  var cnts=groups.map(function(g){return g.n;});
+  var f4=cnts[0]>=4;
+  var f3=cnts[0]>=3;
+  var f2a=cnts[0]>=2;
+  var f2b=cnts.length>1&&cnts[1]>=2;
+  var fullHouse=f3&&f2b;
+  // tiebreak: top5 by rank among flush cards, or sorted groups
+  function topRanks(n){return groups.reduce(function(a,g){for(var x=0;x<Math.min(g.n,n-a.length);x++)a.push(g.r);return a;},[]).slice(0,n);}
+  if(flushStr){return{rank:8,name:'Straight Flush',tiebreak:[flushStrHigh]};}
+  if(f4){var q=groups[0].r;var ki=groups.find(function(g){return g.r!==q;});return{rank:7,name:'Four of a Kind',tiebreak:[q,ki?ki.r:-1]};}
+  if(fullHouse){return{rank:6,name:'Full House',tiebreak:[groups[0].r,groups[1].r]};}
+  if(flush){return{rank:5,name:'Flush',tiebreak:flushRanks};}
+  if(str){return{rank:4,name:'Straight',tiebreak:[strHigh]};}
+  if(f3){var tr=groups[0].r;var kickers=groups.filter(function(g){return g.r!==tr;}).map(function(g){return g.r;}).slice(0,2);return{rank:3,name:'Three of a Kind',tiebreak:[tr].concat(kickers)};}
+  if(f2a&&f2b){var p1=groups[0].r,p2=groups[1].r;var ki2=groups.find(function(g){return g.r!==p1&&g.r!==p2;});return{rank:2,name:'Two Pair',tiebreak:[Math.max(p1,p2),Math.min(p1,p2),ki2?ki2.r:-1]};}
+  if(f2a){var pr=groups[0].r;var kk=groups.filter(function(g){return g.r!==pr;}).map(function(g){return g.r;}).slice(0,3);return{rank:1,name:'One Pair',tiebreak:[pr].concat(kk)};}
+  var hc=groups.map(function(g){return g.r;}).slice(0,5);
+  return{rank:0,name:'High Card '+RANKS[hc[0]],tiebreak:hc};
 }
 
 var BADGES=[
@@ -741,7 +754,7 @@ var G={
     $('nick').addEventListener('blur',function(){self.saveProfile();});
     $('btn-reset-profile').addEventListener('click',function(){self.resetProfile();});
     $('btn-host').addEventListener('click',function(){self.saveProfile();self.hostRoom();});
-    $('btn-join').addEventListener('click',function(){self.saveProfile();self.joinRoom();});
+    $('btn-join').addEventListener('click',function(){if(self._joining)return;self._joining=true;self.saveProfile();self.joinRoom();});
     // Preset buttons
     var PRESETS={
       fast:{sb:25,bb:50,bi:2000,tm:20,br:8},
@@ -773,6 +786,7 @@ var G={
     var ptables=document.querySelectorAll('.ptable');
     for(var pi=0;pi<ptables.length;pi++){
       ptables[pi].addEventListener('click',function(){
+        if(self._joining)return;self._joining=true;
         self.saveProfile();
         self.joinPublic(this.dataset.code,{sb:+this.dataset.sb,bb:+this.dataset.bb,bi:+this.dataset.bi});
       });
@@ -862,7 +876,7 @@ var G={
         self.peer.destroy();
         self._joinPublicClient(code,cfg);
       } else {
-        toast('Error: '+e.type);
+        toast('Error: '+e.type);self._joining=false;
       }
     });
   },
@@ -877,13 +891,13 @@ var G={
       conn.on('open',function(){self.conns.push(conn);conn.send({type:'join',id:id,name:self.nick(),av:self.myAv,img:self.myImg});self.onConn(conn);toast('Joined table');});
       conn.on('error',function(){toast('Could not join — try again');});
     });
-    this.peer.on('error',function(e){toast('Error: '+e.type);});
+    this.peer.on('error',function(e){toast('Error: '+e.type);self._joining=false;});
   },
   joinRoom:function(){
-    var self=this,code=$('j-code').value.trim();if(code.length<3){toast('Enter room code');return;}
+    var self=this,code=$('j-code').value.trim();if(code.length<3){toast('Enter room code');self._joining=false;return;}
     this.peer=new Peer({debug:0});
-    this.peer.on('open',function(id){self.myId=id;var conn=self.peer.connect(code,{reliable:true});conn.on('open',function(){self.conns.push(conn);conn.send({type:'join',id:id,name:self.nick(),av:self.myAv,img:self.myImg});self.onConn(conn);toast('Connecting…');});conn.on('error',function(){toast('Connection failed');});});
-    this.peer.on('error',function(e){toast('Error: '+e.type);});
+    this.peer.on('open',function(id){self.myId=id;var conn=self.peer.connect(code,{reliable:true});conn.on('open',function(){self.conns.push(conn);conn.send({type:'join',id:id,name:self.nick(),av:self.myAv,img:self.myImg});self.onConn(conn);toast('Connecting…');});conn.on('error',function(){toast('Connection failed');self._joining=false;});});
+    this.peer.on('error',function(e){toast('Error: '+e.type);self._joining=false;});
   },
 
   onConn:function(conn){
@@ -1076,15 +1090,14 @@ var G={
         else{self.autoAction=mode;var all=document.querySelectorAll('.auto-btn');for(var k=0;k<all.length;k++)all[k].classList.remove('sel');this.classList.add('sel');}
       });
     }
-    // Quick chat phrases inside chat window
-    var QUICK=['Nice hand! 👏','All in baby 🔥','So lucky 🍀','Bluff! 🤔','Good game 🤝','Let\'s go! 💪','Brutal 💀','Respect 👑'];
-    var qg=$('quick-grid');
-    if(qg){qg.innerHTML=QUICK.map(function(t){return'<div class="quick-item">'+t+'</div>';}).join('');
-      qg.addEventListener('click',function(e){var it=e.target.closest('.quick-item');if(!it)return;self.emoji(it.textContent);});}
   },
   bindChat:function(){
     var self=this;
-    $('cfab').onclick=function(){$('chat-col').classList.add('open');self.chatOpen=true;self.unread=0;$('cbadge').style.display='none';};
+    $('cfab').onclick=function(){
+      var col=$('chat-col');
+      if(col.classList.contains('open')){col.classList.remove('open');self.chatOpen=false;}
+      else{col.classList.add('open');self.chatOpen=true;self.unread=0;$('cbadge').style.display='none';}
+    };
     $('chat-x').onclick=function(){$('chat-col').classList.remove('open');self.chatOpen=false;};
     $('csend').onclick=function(){self.sendChat();};
     $('cinp').onkeydown=function(e){if(e.key==='Enter')self.sendChat();};
@@ -1145,7 +1158,14 @@ var G={
     if(this.phase==='preflop'){newCards=[this.deck.pop(),this.deck.pop(),this.deck.pop()];this.board=newCards.slice();this.phase='flop';}
     else if(this.phase==='flop'){newCards=[this.deck.pop()];this.board.push(newCards[0]);this.phase='turn';}
     else if(this.phase==='turn'){newCards=[this.deck.pop()];this.board.push(newCards[0]);this.phase='river';}
-    else{this.showdown();return;}
+    else{
+      // Wait for the final board card flip animation to finish before showing showdown
+      var cc2=$('cc');var numCards=cc2?cc2.children.length:0;
+      var animWait=numCards*340+600;
+      var self2=this;
+      setTimeout(function(){self2.showdown();},animWait);
+      return;
+    }
     var first=this.dealer;for(var i=0;i<this.pl.length;i++){first=(first+1)%this.pl.length;if(!this.pl[first].folded&&!this.pl[first].busted)break;}
     this.cur=first;this.hlog('— '+this.phase.toUpperCase()+' —');
     this.bcDeal(newCards);
@@ -1191,17 +1211,26 @@ var G={
     var winnersById={};
     var mainWinner=null,mainBest=null;
     pots.forEach(function(pot){
-      var best=null,winner=null;
+      var best=null,winners=[];
       pot.eligible.forEach(function(p){
         if(!p.cards||p.cards.length<2)return;
         var ev=evalHand(p.cards,board);
-        if(!best||ev.rank>best.rank){best=ev;winner=p;}
+        if(!best||ev.rank>best.rank){best=ev;winners=[p];}
+        else if(ev.rank===best.rank){
+          // tiebreak by kicker array
+          var tb1=ev.tiebreak||[];var tb2=best.tiebreak||[];
+          var cmp=0;for(var ti=0;ti<Math.max(tb1.length,tb2.length);ti++){var d=(tb1[ti]||0)-(tb2[ti]||0);if(d!==0){cmp=d;break;}}
+          if(cmp>0){best=ev;winners=[p];}
+          else if(cmp===0){winners.push(p);} // split pot
+        }
       });
-      if(winner){
-        winner.chips+=pot.amount;
-        winnersById[winner.id]=(winnersById[winner.id]||0)+pot.amount;
+      // Split pot evenly among tied winners
+      var share=Math.floor(pot.amount/Math.max(winners.length,1));
+      winners.forEach(function(winner){
+        winner.chips+=share;
+        winnersById[winner.id]=(winnersById[winner.id]||0)+share;
         if(!mainWinner){mainWinner=winner;mainBest=best;}
-      }
+      });
     });
     if(!mainWinner){this.endHand();return;}
     mainWinner.st.wins=(mainWinner.st.wins||0)+1;mainWinner.st.rWins=(mainWinner.st.rWins||0)+1;
