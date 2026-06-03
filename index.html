@@ -309,7 +309,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v71</div>
+<div class="ver">SIBSTRIN FOLD · v72</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -1155,7 +1155,10 @@ var G={
   nextPhase:function(){
     clearInterval(this.tmr);this.pl.forEach(function(p){if(!p.folded&&!p.allIn&&!p.busted)p.acted=false;p.bet=0;});
     var alive=this.pl.filter(function(p){return !p.folded&&!p.busted;});
-    var allInRunout=alive.length>0&&alive.every(function(p){return p.allIn||p.chips===0;});
+    // Runout mode: nobody left who can still make a betting decision
+    // (everyone is all-in, or only a single player has chips left while the rest are all-in)
+    var canStillAct=alive.filter(function(p){return !p.allIn&&p.chips>0;});
+    var allInRunout=alive.length>=2&&canStillAct.length<=1;
     var newCards=null;
     if(this.phase==='preflop'){newCards=[this.deck.pop(),this.deck.pop(),this.deck.pop()];this.board=newCards.slice();this.phase='flop';}
     else if(this.phase==='flop'){newCards=[this.deck.pop()];this.board.push(newCards[0]);this.phase='turn';}
