@@ -384,7 +384,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v77</div>
+<div class="ver">SIBSTRIN FOLD · v79</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -435,6 +435,11 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
       <div class="pt-tier" style="color:var(--gold)">GOLD</div>
       <div class="pt-info"><div class="pt-name">Gold Table</div><div class="pt-sub">Blinds 100/200 · Buy-in 10,000</div></div>
       <div class="pt-count" id="cnt-SIBFOLD-GOLD">—</div>
+    </div>
+    <div class="ptable" data-code="SIBFOLD-ARENA" data-sb="50" data-bb="100" data-bi="5000" data-bots="1">
+      <div class="pt-tier" style="color:#9fd6b0">ARENA</div>
+      <div class="pt-info"><div class="pt-name">Practice Arena</div><div class="pt-sub">Blinds 50/100 · Bots playing now</div></div>
+      <div class="pt-count" id="cnt-SIBFOLD-ARENA">…</div>
     </div>
   </div>
 
@@ -874,7 +879,7 @@ var G={
       ptables[pi].addEventListener('click',function(){
         if(self._joining)return;self._joining=true;
         self.saveProfile();
-        self.joinPublic(this.dataset.code,{sb:+this.dataset.sb,bb:+this.dataset.bb,bi:+this.dataset.bi});
+        self.joinPublic(this.dataset.code,{sb:+this.dataset.sb,bb:+this.dataset.bb,bi:+this.dataset.bi,bots:this.dataset.bots==='1',botCount:self._arenaBotCount});
       });
     }
     // Probe public tables for live player counts
@@ -883,7 +888,7 @@ var G={
 
   probePublicTables:function(){
     var self=this;
-    var codes=['SIBFOLD-BRONZE','SIBFOLD-SILVER','SIBFOLD-GOLD'];
+    var codes=['SIBFOLD-BRONZE','SIBFOLD-SILVER','SIBFOLD-GOLD','SIBFOLD-ARENA'];
     codes.forEach(function(code){
       self._probeOne(code);
     });
@@ -896,19 +901,36 @@ var G={
   },
   _probeOne:function(code){
     var el=$('cnt-'+code);if(!el)return;
+    var isArena=code==='SIBFOLD-ARENA';
     var probe=new Peer({debug:0});
     var done=false;
     var finish=function(html,live){if(done)return;done=true;el.innerHTML=html;el.className='pt-count'+(live?' live':'');try{probe.destroy();}catch(e){}};
+    // For Arena with no live host, show an inviting bot count so it reads as "bots are playing"
+    var arenaIdle=function(){
+      if(!isArena){finish('Empty',false);return;}
+      // deterministic-ish per 30s bucket so it doesn't flicker every refresh
+      var seed=Math.floor(Date.now()/30000)%5;
+      var n=3+seed; // 3..7 bots
+      self._arenaBotCount=n;
+      finish('<b>'+n+'</b>bots',true);
+    };
     probe.on('open',function(){
       var conn=probe.connect(code,{reliable:true});
-      var to=setTimeout(function(){finish('Empty',false);},3500);
+      var to=setTimeout(function(){arenaIdle();},3500);
       conn.on('open',function(){conn.send({type:'probe'});});
-      conn.on('data',function(d){if(d&&d.type==='probe-result'){clearTimeout(to);finish('<b>'+d.count+'</b>'+(d.count===1?'player':'players'),true);}});
-      conn.on('error',function(){clearTimeout(to);finish('Empty',false);});
+      conn.on('data',function(d){if(d&&d.type==='probe-result'){clearTimeout(to);
+        if(isArena){
+          var b=(typeof d.bots==='number')?d.bots:d.count;
+          finish('<b>'+b+'</b>'+(b===1?'bot':'bots'),true);
+        }else{
+          finish('<b>'+d.count+'</b>'+(d.count===1?'player':'players'),true);
+        }
+      }});
+      conn.on('error',function(){clearTimeout(to);arenaIdle();});
     });
     probe.on('error',function(e){
-      // can't connect → no host → table empty
-      finish('Empty',false);
+      // can't connect → no host → table empty (or idle bots for Arena)
+      arenaIdle();
     });
   },
 
@@ -944,6 +966,32 @@ var G={
     toast(bp.name+' joined');
     this.bcState();this.renderWaiting();this.renderAll();
   },
+  // Populate an empty arena table with a random number of bots that have
+  // varied stacks (as if a game has been going), then auto-deal the first hand.
+  _seedBotsAndStart:function(want){
+    if(!this.host)return;
+    var self=this;
+    var bi=this.cfg.bi;
+    var maxBots=Math.min(this.cfg.mp-1,8);
+    // Use the count shown in the lobby if available, otherwise random across the range
+    var nBots;
+    if(typeof want==='number'&&want>0){nBots=Math.max(2,Math.min(maxBots,want));}
+    else{nBots=2+Math.floor(Math.random()*(maxBots-2+1));}
+    var pool=this.BOT_NAMES.slice();
+    for(var s=pool.length-1;s>0;s--){var j=Math.floor(Math.random()*(s+1));var t=pool[s];pool[s]=pool[j];pool[j]=t;}
+    for(var i=0;i<nBots;i++){
+      var name=pool[i]||('CPU '+(i+1));
+      var bid='bot_'+Date.now()+'_'+i+'_'+Math.floor(Math.random()*1000);
+      var mult=0.35+Math.random()*1.95;
+      var chips=Math.max(this.cfg.bb*2,Math.round(bi*mult/50)*50);
+      var bp=this.mkP(bid,name,null,null,chips,true);
+      bp.st.hands=3+Math.floor(Math.random()*25);
+      this.pl.push(bp);
+    }
+    toast('Sitting down at a live table…');
+    this.bcState();this.renderWaiting();this.renderAll();
+    setTimeout(function(){if(self.host&&self.phase==='waiting'){self.startHand();}},1400);
+  },
   removeBot:function(){
     if(!this.host)return;
     if(this.phase!=='waiting'){toast('Remove bots before dealing');return;}
@@ -973,7 +1021,8 @@ var G={
       self.pl=[self.mkP(id,self.nick(),self.myAv,self.myImg,self.cfg.bi)];
       self.myI=0;self.eliminated=[];
       self.enterGame();
-      toast('You are hosting this table');
+      if(cfg.bots){self._seedBotsAndStart(cfg.botCount);}
+      else{toast('You are hosting this table');}
     });
     this.peer.on('connection',function(conn){self.onConn(conn);});
     this.peer.on('error',function(e){
@@ -1017,7 +1066,7 @@ var G={
     var self=this;
     if(d.type==='probe'){
       // someone is checking how many players are at this table
-      if(this.host){var cnt=this.pl.filter(function(p){return !p.busted&&!p.disconnected;}).length;try{conn.send({type:'probe-result',count:cnt,max:this.cfg.mp});}catch(e){}}
+      if(this.host){var act=this.pl.filter(function(p){return !p.busted&&!p.disconnected;});var cnt=act.length;var bcnt=act.filter(function(p){return p.bot;}).length;try{conn.send({type:'probe-result',count:cnt,bots:bcnt,max:this.cfg.mp});}catch(e){}}
       return;
     }
     if(d.type==='join'){
