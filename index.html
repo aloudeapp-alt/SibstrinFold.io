@@ -48,9 +48,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 .bg-gold:hover{box-shadow:0 4px 18px rgba(212,175,55,.5)}
 .bo{background:transparent;border:1.5px solid var(--gold);color:var(--gold)}
 .bo:hover{background:rgba(212,175,55,.08)}
-.ag{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:.55rem}
-.ao{aspect-ratio:1;border-radius:50%;cursor:pointer;border:2px solid var(--gold-dk);font-size:1.3rem;display:flex;align-items:center;justify-content:center;background:#0a0805;transition:.15s}
-.ao.sel{border-color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.4)}
+.av-mono-prev{width:54px;height:54px;border-radius:50%;border:2px solid var(--gold);background:#0a0805;display:flex;align-items:center;justify-content:center;font-family:'Georgia',serif;font-weight:700;font-size:1.5rem;color:var(--gold);flex-shrink:0;text-shadow:0 1px 2px rgba(0,0,0,.6)}
 .psaved{display:none;background:rgba(212,175,55,.08);border:1px solid var(--gold-dk);border-radius:8px;padding:.4rem .7rem;margin-bottom:.6rem;align-items:center;gap:.5rem}
 .preset-btn{flex:1;background:#0a0805;border:1px solid var(--gold-dk);border-radius:9px;color:var(--txt-dim);padding:.5rem .3rem;cursor:pointer;font-family:'Segoe UI',sans-serif;font-size:.72rem;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:1px;transition:.14s}
 .preset-btn span{font-size:.54rem;color:var(--txt-dim);font-weight:400;opacity:.7}
@@ -165,11 +163,17 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 .seat.busted .seat-av-ring{filter:grayscale(1);opacity:.3}
 .seat-av{width:100%;height:100%;border-radius:50%;background:#0a0805;display:flex;align-items:center;justify-content:center;font-size:1.4rem;overflow:hidden}
 .seat-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.seat-av .mono{font-family:'Georgia',serif;font-weight:700;color:var(--gold);font-size:1.5rem;line-height:1;letter-spacing:0;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.seat-av .mono.bot-mono{color:#9fb8c9}
+.seats-cont.dense-2 .seat-av .mono{font-size:1.2rem}
+.seats-cont.dense-3 .seat-av .mono{font-size:1rem}
 .dbn{position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;background:var(--gold-grad);border-radius:50%;font-size:9px;color:#1a1305;display:flex;align-items:center;justify-content:center;font-weight:800;border:1.5px solid #1a1305;font-family:'Segoe UI',sans-serif}
 /* name + chips plate */
 .seat-plate{background:rgba(10,8,5,.92);border:1px solid var(--gold-dk);border-radius:9px;padding:2px 8px 3px;text-align:center;margin-top:-6px;min-width:64px;font-family:'Segoe UI',sans-serif}
 .seat-name{font-size:.6rem;color:var(--txt);max-width:78px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .seat-chips{font-size:.68rem;color:var(--gold);font-weight:700}
+.seat-cpu{display:inline-block;margin-left:4px;font-size:.42rem;letter-spacing:.5px;color:#7d97a8;border:1px solid #3a4a55;border-radius:4px;padding:0 3px;vertical-align:middle;font-family:'Segoe UI',sans-serif}
+.seat-out{font-size:.55rem;letter-spacing:2px;color:#9a7b3c;font-weight:700;font-family:'Segoe UI',sans-serif}
 .pstatus{display:block;font-size:.45rem;letter-spacing:.3px}
 .pstatus.good{color:#5fd98a}.pstatus.mid{color:#e0b020}.pstatus.bad{color:#e07050}.pstatus.off{color:#e0604f}
 .seat-badge{font-size:.46rem;color:var(--gold-dk);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
@@ -290,7 +294,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 .final-ovl{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 30%,#1a1408,#080603);z-index:400;display:none;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;gap:1rem;font-family:'Segoe UI',sans-serif}
 .final-ovl.show{display:flex}
 .final-title{font-size:.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:5px}
-.final-trophy{font-size:4.5rem;line-height:1}
+.final-trophy{font-size:4.5rem;line-height:1;color:var(--gold)}
 .final-wname{font-size:1.7rem;font-weight:900;color:var(--gold)}
 .final-chips{font-size:1.1rem;color:var(--gold-lt);font-weight:700}
 .final-places{display:flex;flex-direction:column;gap:.4rem;width:100%;max-width:320px}
@@ -310,6 +314,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 .stats-av{width:72px;height:72px;border-radius:50%;padding:3px;background:var(--frame);margin:0 auto .5rem}
 .stats-av-in{width:100%;height:100%;border-radius:50%;background:#0a0805;display:flex;align-items:center;justify-content:center;font-size:2rem;overflow:hidden}
 .stats-av-in img{width:100%;height:100%;object-fit:cover}
+.stats-av-in .mono{font-family:'Georgia',serif;font-weight:700;color:var(--gold);font-size:2rem;text-shadow:0 1px 2px rgba(0,0,0,.6)}
 .stats-name{font-size:1.2rem;color:var(--txt);font-weight:700;font-family:'Georgia',serif}
 .stats-title{font-size:.7rem;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;font-family:'Segoe UI',sans-serif}
@@ -379,7 +384,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v74</div>
+<div class="ver">SIBSTRIN FOLD · v76</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -393,15 +398,15 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
     <div class="psaved" id="psaved"><span style="font-size:.72rem;color:var(--gold)">✓ Profile loaded</span><button id="btn-reset-profile" style="margin-left:auto;background:none;border:1px solid var(--red);border-radius:6px;color:#e8a59c;font-size:.65rem;padding:2px 8px;cursor:pointer">Reset</button></div>
     <div class="f"><label>Nickname</label><input id="nick" placeholder="Your name" maxlength="14"></div>
     <div class="f"><label>Avatar</label>
-      <div class="ag" id="av-grid">
-        <div class="ao sel" data-av="🤵">🤵</div><div class="ao" data-av="🎩">🎩</div>
-        <div class="ao" data-av="👑">👑</div><div class="ao" data-av="🦊">🦊</div>
-        <div class="ao" data-av="🐺">🐺</div><div class="ao" data-av="🦈">🦈</div>
-        <div class="ao" data-av="😎">😎</div><div class="ao" data-av="🃏">🃏</div>
-        <div class="ao" data-av="💎">💎</div><div class="ao" data-av="upload">📷</div>
+      <div id="av-mono-wrap" style="display:flex;align-items:center;gap:12px">
+        <div class="av-mono-prev" id="av-mono-prev">?</div>
+        <div style="flex:1">
+          <div style="font-size:.66rem;color:var(--txt-dim);margin-bottom:5px;font-family:'Segoe UI',sans-serif">Your monogram, or upload a photo</div>
+          <button class="btn bo" id="btn-av-upload" style="height:34px;font-size:.7rem">Upload photo</button>
+        </div>
       </div>
       <input type="file" id="av-file" accept="image/*" style="display:none">
-      <div id="av-prev" style="display:none;text-align:center;margin-top:3px"><img id="av-img" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)"></div>
+      <div id="av-prev" style="display:none;text-align:center;margin-top:6px"><img id="av-img" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)"><button id="btn-av-clear" style="display:block;margin:5px auto 0;background:none;border:1px solid var(--gold-dk);border-radius:6px;color:var(--txt-dim);font-size:.6rem;padding:2px 8px;cursor:pointer">Remove photo</button></div>
     </div>
   </div>
   <div class="lc" style="padding:.5rem">
@@ -481,14 +486,14 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
   </div>
   <div class="game-wrap">
     <div class="table-col" id="table-col">
-      <div id="spec-banner" class="spec-banner">👁 You are spectating</div>
+      <div id="spec-banner" class="spec-banner">You are spectating</div>
       <div class="wlobby" id="wlobby">
         <p style="font-size:.62rem;color:var(--gold-dk);letter-spacing:3px;text-transform:uppercase;font-family:'Segoe UI',sans-serif">Room Code</p>
         <div class="wcode" id="wcode">————</div>
         <p style="font-size:.78rem;color:var(--txt-dim);text-align:center;font-family:'Segoe UI',sans-serif">Share with friends · Host deals when ready</p>
         <div class="pwrap" style="max-width:320px"><div style="font-size:.6rem;color:var(--gold-dk);text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem;font-family:'Segoe UI',sans-serif">At table</div><div id="wpl" style="display:flex;flex-wrap:wrap;gap:6px"></div></div>
         <div id="host-bot-wrap" style="width:100%;max-width:320px;display:none;gap:8px;margin-bottom:.5rem">
-          <button class="btn" id="btn-add-bot" style="flex:1;background:rgba(250,222,129,.12);color:var(--gold);border:1px solid var(--gold-dk)">🤖 Add Bot</button>
+          <button class="btn" id="btn-add-bot" style="flex:1;background:rgba(250,222,129,.12);color:var(--gold);border:1px solid var(--gold-dk)">Add Bot</button>
           <button class="btn" id="btn-rm-bot" style="flex:1;background:rgba(192,57,43,.15);color:#e08a7e;border:1px solid #7a3329">✕ Remove Bot</button>
         </div>
         <div id="host-deal-wrap" style="width:100%;max-width:320px;display:none"><button class="btn bg-gold" id="btn-deal-lobby">▶ Deal First Hand</button></div>
@@ -549,13 +554,13 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 
 <!-- MY STATS -->
 <div class="ovl" id="stats-ovl">
-  <div class="oh"><span>📊 My Statistics</span><button class="ib" id="stats-x">✕</button></div>
+  <div class="oh"><span>My Statistics</span><button class="ib" id="stats-x">✕</button></div>
   <div class="ob" id="stats-body"></div>
 </div>
 
 <!-- LEADERBOARD -->
 <div class="ovl" id="lb-ovl">
-  <div class="oh"><span>🏆 Weekly Leaderboard</span><button class="ib" id="lb-x">✕</button></div>
+  <div class="oh"><span>Weekly Leaderboard</span><button class="ib" id="lb-x">✕</button></div>
   <div class="ob" id="lb-body"></div>
 </div>
 
@@ -563,7 +568,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 <div class="ovl" id="sp-ovl">
   <div class="oh"><span>☰ Menu</span><button class="ib" id="sp-x">✕</button></div>
   <div class="ob" id="sp-body">
-    <div style="margin-bottom:.85rem"><button class="btn bo" id="btn-mystats" style="height:38px;font-size:.75rem;margin-bottom:.5rem">📊 My Stats</button><button class="btn bo" id="btn-lb2" style="height:38px;font-size:.75rem;margin-bottom:.5rem">🏆 Leaderboard</button><button class="btn bo" id="btn-sound" style="height:38px;font-size:.75rem;margin-bottom:.5rem">🔊 Sound: ON</button><button class="btn bo" id="btn-wake" style="height:38px;font-size:.75rem;margin-bottom:.5rem">📱 Keep Screen On: ON</button><button class="btn bo" id="btn-hhtog" style="height:38px;font-size:.75rem">📋 Toggle Hand Log</button></div>
+    <div style="margin-bottom:.85rem"><button class="btn bo" id="btn-mystats" style="height:38px;font-size:.75rem;margin-bottom:.5rem">My Stats</button><button class="btn bo" id="btn-lb2" style="height:38px;font-size:.75rem;margin-bottom:.5rem">Leaderboard</button><button class="btn bo" id="btn-sound" style="height:38px;font-size:.75rem;margin-bottom:.5rem">Sound: ON</button><button class="btn bo" id="btn-wake" style="height:38px;font-size:.75rem;margin-bottom:.5rem">Keep Screen On: ON</button><button class="btn bo" id="btn-hhtog" style="height:38px;font-size:.75rem">Toggle Hand Log</button></div>
     <div style="margin-bottom:.85rem;padding-bottom:.85rem;border-bottom:1px solid var(--gold-dk)">
       <div style="font-size:.62rem;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.45rem">🎙 Push-to-Talk Key</div>
       <div style="font-size:.68rem;color:var(--txt-dim);margin-bottom:.5rem">Assign a key to talk (desktop). Default: Space</div>
@@ -588,8 +593,8 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 
 <!-- FINAL -->
 <div class="final-ovl" id="final-ovl">
-  <div class="final-title">🏆 Game Over</div>
-  <div style="text-align:center"><div class="final-trophy">🏆</div><div class="final-wname" id="final-wname">Winner</div><div class="final-chips" id="final-chips"></div></div>
+  <div class="final-title">Game Over</div>
+  <div style="text-align:center"><div class="final-trophy">♛</div><div class="final-wname" id="final-wname">Winner</div><div class="final-chips" id="final-chips"></div></div>
   <div class="final-places" id="final-places"></div>
   <button class="final-btn" id="final-back">← Back to Lobby</button>
 </div>
@@ -746,8 +751,8 @@ var BADGES=[
   {name:'All-In Artist',icon:'⚡',c:function(p){return p.st.allIns>=3;}},
   {name:'Marathon Man',icon:'🏃',c:function(p){return p.st.hands>=20;}}
 ];
-function getBadge(p){for(var i=0;i<BADGES.length;i++)if(BADGES[i].c(p))return BADGES[i];return{name:'Rookie',icon:'🎯'};}
-function getTrophy(p){var w=p.st.wins||0;return w>=10?'🏆':w>=5?'🥇':w>=2?'🥈':w>=1?'🥉':'';}
+function getBadge(p){for(var i=0;i<BADGES.length;i++)if(BADGES[i].c(p))return BADGES[i];return{name:'Rookie',icon:''};}
+function getTrophy(p){return'';}
 
 /* casino chip stack on table near player */
 function chipPile(amt){
@@ -796,7 +801,7 @@ var G={
   pl:[],myI:-1,deck:[],board:[],pot:0,
   phase:'waiting',cur:-1,dealer:0,sbI:-1,bbI:-1,
   cfg:{sb:50,bb:100,bi:10000,tm:30,br:15,mp:9,rn:''},
-  tmr:null,tLeft:30,log:[],myAv:'🤵',myImg:null,unread:0,wk:{},chatOpen:false,
+  tmr:null,tLeft:30,log:[],myAv:null,myImg:null,unread:0,wk:{},chatOpen:false,
   eliminated:[],isSpec:false,presence:{},
 
   init:function(){this.loadWk();this.bindLobby();this.bindGame();this.bindChat();},
@@ -807,24 +812,31 @@ var G={
   loadProfile:function(){
     try{var p=JSON.parse(localStorage.getItem('sf_profile')||'null');if(!p)return;
       $('nick').value=p.name||'';
-      if(p.img){this.myImg=p.img;$('av-img').src=p.img;$('av-prev').style.display='block';this.myAv=p.av||'🤵';
-        var u=document.querySelector('.ao[data-av="upload"]');var all=document.querySelectorAll('.ao');for(var i=0;i<all.length;i++)all[i].classList.remove('sel');if(u)u.classList.add('sel');
-      }else if(p.av){this.myAv=p.av;var all2=document.querySelectorAll('.ao');for(var j=0;j<all2.length;j++)all2[j].classList.remove('sel');var el=document.querySelector('.ao[data-av="'+p.av+'"]');if(el)el.classList.add('sel');}
+      this.myAv=null;
+      if(p.img){this.myImg=p.img;$('av-img').src=p.img;$('av-prev').style.display='block';}
+      this._updMonoPrev();
       $('psaved').style.display='flex';
     }catch(e){}
   },
-  saveProfile:function(){try{localStorage.setItem('sf_profile',JSON.stringify({name:this.nick(),av:this.myAv,img:this.myImg||null}));}catch(e){}},
-  resetProfile:function(){try{localStorage.removeItem('sf_profile');}catch(e){}$('nick').value='';this.myAv='🤵';this.myImg=null;var all=document.querySelectorAll('.ao');for(var i=0;i<all.length;i++)all[i].classList.remove('sel');document.querySelector('.ao[data-av="🤵"]').classList.add('sel');$('av-prev').style.display='none';$('psaved').style.display='none';toast('Profile reset');},
+  saveProfile:function(){try{localStorage.setItem('sf_profile',JSON.stringify({name:this.nick(),av:null,img:this.myImg||null}));}catch(e){}},
+  resetProfile:function(){try{localStorage.removeItem('sf_profile');}catch(e){}$('nick').value='';this.myAv=null;this.myImg=null;$('av-prev').style.display='none';$('psaved').style.display='none';this._updMonoPrev();toast('Profile reset');},
+  // Update the monogram preview in the profile panel from the current nickname
+  _updMonoPrev:function(){
+    var el=$('av-mono-prev');if(!el)return;
+    if(this.myImg){el.style.display='none';return;}
+    el.style.display='flex';
+    var nm=this.nick()||'';
+    el.textContent=nm.replace(/[^A-Za-zА-Яа-я0-9]/g,'').charAt(0).toUpperCase()||'?';
+  },
 
   bindLobby:function(){
     var self=this;
-    this.buildAvatarGrid();
     this.loadProfile();
-    $('av-grid').addEventListener('click',function(e){var o=e.target.closest('.ao');if(!o)return;if(o.dataset.av==='upload'){$('av-file').click();return;}var all=document.querySelectorAll('.ao');for(var i=0;i<all.length;i++)all[i].classList.remove('sel');o.classList.add('sel');
-      if(o.dataset.img){self.myImg=o.dataset.img;self.myAv=o.dataset.av||'🤵';}
-      else{self.myAv=o.dataset.av;self.myImg=null;}
-      $('av-prev').style.display='none';});
-    $('av-file').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){self.myImg=ev.target.result;$('av-img').src=ev.target.result;$('av-prev').style.display='block';};r.readAsDataURL(f);});
+    this._updMonoPrev();
+    $('btn-av-upload').addEventListener('click',function(){$('av-file').click();});
+    $('av-file').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){self.myImg=ev.target.result;$('av-img').src=ev.target.result;$('av-prev').style.display='block';self._updMonoPrev();self.saveProfile();};r.readAsDataURL(f);});
+    $('btn-av-clear').addEventListener('click',function(){self.myImg=null;$('av-prev').style.display='none';self._updMonoPrev();self.saveProfile();});
+    $('nick').addEventListener('input',function(){self._updMonoPrev();});
     $('nick').addEventListener('blur',function(){self.saveProfile();});
     $('btn-reset-profile').addEventListener('click',function(){self.resetProfile();});
     $('btn-host').addEventListener('click',function(){self.saveProfile();self.hostRoom();});
@@ -900,35 +912,34 @@ var G={
     });
   },
 
-  buildAvatarGrid:function(){
-    var grid=$('av-grid');
-    var html='';
-    // image avatars only
-    for(var i=0;i<IMG_AVATARS.length;i++){
-      if(IMG_AVATARS[i]){
-        html+='<div class="ao ao-img'+(i===0?' sel':'')+'" data-img="'+IMG_AVATARS[i]+'" data-av="🤵" style="padding:0;overflow:hidden"><img src="'+IMG_AVATARS[i]+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentNode.style.display=\'none\'"></div>';
-      }
-    }
-    // upload own photo
-    html+='<div class="ao" data-av="upload">📷</div>';
-    grid.innerHTML=html;
-    this.myImg=IMG_AVATARS[0]||null;
-    this.myAv='🤵';
-  },
-
   nick:function(){return $('nick').value.trim()||'Player';},
   mkP:function(id,name,av,img,chips,bot){return{id:id,name:name,av:av,img:img,chips:chips,bot:!!bot,cards:[],bet:0,folded:false,allIn:false,lastAct:'',acted:false,busted:false,disconnected:false,lastBeat:Date.now(),st:{hands:0,wins:0,folds:0,raises:0,rWins:0,allIns:0,sc:chips,biggestPot:0,luckyHand:null}};},
-  BOT_NAMES:['Aleha','Denis','Mikhail','Andrei','Tolyan','Diman','Roma','Slavir','Dop','Vasil','Oleg','Maksim','Dega','Don Pedro','Dopolnitelnii','LehaGruz','ZamMinistra','Andruha UFC','Denchik Knauf','Udik'],
+  // Compact avatar for small circles (showdown, leaderboard, final screen)
+  _avMono:function(p){
+    if(p&&p.img)return'<img src="'+p.img+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+    var nm=(p&&p.name)||'';
+    var m=nm.replace(/[^A-Za-zА-Яа-я0-9]/g,'').charAt(0).toUpperCase()||'?';
+    return'<span class="mono'+(p&&p.bot?' bot-mono':'')+'">'+m+'</span>';
+  },
+  // Avatar inner HTML: photo if uploaded, else a gold monogram from the name.
+  _avInner:function(p){
+    if(p&&p.img)return'<img src="'+p.img+'" alt="">';
+    var nm=(p&&p.name)||'';
+    // strip leading non-letters, take first letter
+    var m=nm.replace(/[^A-Za-zА-Яа-я0-9]/g,'').charAt(0).toUpperCase()||'?';
+    var cls=p&&p.bot?'mono bot-mono':'mono';
+    return'<span class="'+cls+'">'+m+'</span>';
+  },
+  BOT_NAMES:['Ace','Bishop','Caesar','Duke','Echo','Falcon','Ghost','Hawk','Ivan','Joker','King','Lynx','Maverick','Nomad','Oracle','Phoenix','Quill','Raven','Sphinx','Titan'],
   addBot:function(){
     if(!this.host)return;
     if(this.phase!=='waiting'){toast('Add bots before dealing');return;}
     if(this.pl.length>=this.cfg.mp){toast('Table full');return;}
     var used=this.pl.map(function(p){return p.name;});
-    var avail=this.BOT_NAMES.filter(function(n){return used.indexOf('🤖 '+n)<0;});
-    var name=avail.length?avail[Math.floor(Math.random()*avail.length)]:('Bot'+this.pl.length);
-    var av=['🤖','👾','🦾','🎰','🃏','🎲'][Math.floor(Math.random()*6)];
+    var avail=this.BOT_NAMES.filter(function(n){return used.indexOf(n)<0;});
+    var name=avail.length?avail[Math.floor(Math.random()*avail.length)]:('CPU '+this.pl.length);
     var bid='bot_'+Date.now()+'_'+Math.floor(Math.random()*1000);
-    var bp=this.mkP(bid,'🤖 '+name,av,null,this.cfg.bi,true);
+    var bp=this.mkP(bid,name,null,null,this.cfg.bi,true);
     this.pl.push(bp);
     toast(bp.name+' joined');
     this.bcState();this.renderWaiting();this.renderAll();
@@ -1078,10 +1089,10 @@ var G={
       // rebuy available?
       var rebuyOk=this.cfg.rb>0&&this.gameStart&&(Date.now()-this.gameStart<this.cfg.rb*60000);
       if(rebuyOk){
-        b.innerHTML='👁 You busted out — <button id="rebuy-btn" style="background:var(--gold);border:none;border-radius:6px;color:#1a1305;font-weight:700;padding:3px 10px;cursor:pointer;font-size:.72rem">Rebuy '+this.cfg.bi.toLocaleString()+'</button>';
+        b.innerHTML='You busted out — <button id="rebuy-btn" style="background:var(--gold);border:none;border-radius:6px;color:#1a1305;font-weight:700;padding:3px 10px;cursor:pointer;font-size:.72rem">Rebuy '+this.cfg.bi.toLocaleString()+'</button>';
         var rb=$('rebuy-btn');if(rb)rb.onclick=function(){G.requestRebuy();};
       }else{
-        b.innerHTML='👁 You are spectating'+(this.cfg.rb>0?' — rebuy window closed':'');
+        b.innerHTML='You are spectating'+(this.cfg.rb>0?' — rebuy window closed':'');
       }
     }else{b.style.display='none';}
     if($('bot'))$('bot').style.display=this.isSpec?'none':'block';
@@ -1170,8 +1181,8 @@ var G={
     $('btn-mystats').onclick=function(){self.renderStats();$('sp-ovl').classList.remove('open');$('stats-ovl').classList.add('open');};
     $('stats-x').onclick=function(){$('stats-ovl').classList.remove('open');};
     $('btn-hhtog').onclick=function(){$('hhlog').classList.toggle('vis');};
-    $('btn-sound').onclick=function(){SFX.enabled=!SFX.enabled;$('btn-sound').textContent=SFX.enabled?'🔊 Sound: ON':'🔇 Sound: OFF';if(SFX.enabled)SFX.chip();};
-    $('btn-wake').onclick=function(){if(WAKE._wanted){WAKE.stop();$('btn-wake').textContent='📱 Keep Screen On: OFF';}else{WAKE.start();$('btn-wake').textContent='📱 Keep Screen On: ON';}};
+    $('btn-sound').onclick=function(){SFX.enabled=!SFX.enabled;$('btn-sound').textContent=SFX.enabled?'Sound: ON':'Sound: OFF';if(SFX.enabled)SFX.chip();};
+    $('btn-wake').onclick=function(){if(WAKE._wanted){WAKE.stop();$('btn-wake').textContent='Keep Screen On: OFF';}else{WAKE.start();$('btn-wake').textContent='Keep Screen On: ON';}};
     $('btn-leave').onclick=function(){if(confirm('Leave table?'))location.reload();};
     $('copy-code').onclick=function(){navigator.clipboard.writeText(self.code).then(function(){toast('Copied: '+self.code);});};
     $('sd-next').onclick=function(){if(!self.host)return;$('sdovl').classList.remove('show');if(self._sdTimer)clearInterval(self._sdTimer);self.startHand();};
@@ -1428,7 +1439,7 @@ var G={
     });
     if(!mainWinner){this.endHand();return;}
     mainWinner.st.wins=(mainWinner.st.wins||0)+1;mainWinner.st.rWins=(mainWinner.st.rWins||0)+1;
-    this.hlog('🏆 '+mainWinner.name+' wins '+(winnersById[mainWinner.id])+' — '+mainBest.name);
+    this.hlog(mainWinner.name+' wins '+(winnersById[mainWinner.id])+' — '+mainBest.name);
     this._updWk(mainWinner);this._checkBusted();
     var sd={type:'showdown',pl:this.pl,board:this.board,winnerId:mainWinner.id,handName:mainBest.name,pot:winnersById[mainWinner.id]||this.pot,winners:winnersById,elim:this.eliminated};
     this.bc(sd);this.showSD(sd);
@@ -1437,7 +1448,7 @@ var G={
     clearInterval(this.tmr);if(this._botTmr){clearTimeout(this._botTmr);this._botTmr=null;}
     var w=this.pl.filter(function(p){return !p.folded&&!p.busted;})[0];if(!w)return;
     w.chips+=this.pot;w.st.wins=(w.st.wins||0)+1;
-    this.hlog('🏆 '+w.name+' wins '+this.pot+' (all folded)');this._updWk(w);this._checkBusted();
+    this.hlog(w.name+' wins '+this.pot+' (all folded)');this._updWk(w);this._checkBusted();
     var sd={type:'showdown',pl:this.pl,board:this.board,winnerId:w.id,handName:'All folded',pot:this.pot,elim:this.eliminated};
     this.bc(sd);this.showSD(sd);
   },
@@ -1461,8 +1472,7 @@ var G={
   showFinal:function(d){
     var winner=d.places.find(function(p){return p.place===1;})||d.places[0];
     $('final-wname').textContent=winner.name;$('final-chips').textContent='Winner · '+(winner.chips||0).toLocaleString()+' chips';
-    var medals=['🥇','🥈','🥉'];
-    $('final-places').innerHTML=d.places.map(function(p,i){return'<div class="fp-row"><div class="fp-place">'+(i===0?'🏆':medals[i]||'#'+(i+1))+'</div><div class="fp-av">'+(p.av||'🎴')+'</div><div class="fp-name">'+p.name+'</div><div class="fp-chips">'+(p.chips||0).toLocaleString()+'</div></div>';}).join('');
+    $('final-places').innerHTML=d.places.map(function(p,i){return'<div class="fp-row"><div class="fp-place">'+(i+1)+'</div><div class="fp-av">'+G._avMono(p)+'</div><div class="fp-name">'+p.name+'</div><div class="fp-chips">'+(p.chips||0).toLocaleString()+'</div></div>';}).join('');
     $('final-ovl').classList.add('show');
   },
 
@@ -1477,12 +1487,12 @@ var G={
     showable.forEach(function(p){
       var isWin=p.id===d.winnerId;var ev=null;try{ev=p.cards&&p.cards.length===2&&d.board&&d.board.length>=3?evalHand(p.cards,d.board):null;}catch(e){}
       var div=document.createElement('div');div.className='sd-player'+(isWin?' winner':'');
-      div.innerHTML='<div class="sd-av">'+(p.av||'🎴')+'</div><div class="sd-pname">'+p.name+'</div>'+(ev?'<div class="sd-hand">'+ev.name+'</div>':'')+(isWin?'<div class="sd-win">+'+d.pot+' 🏆</div>':'');
+      div.innerHTML='<div class="sd-av">'+G._avMono(p)+'</div><div class="sd-pname">'+p.name+'</div>'+(ev?'<div class="sd-hand">'+ev.name+'</div>':'')+(isWin?'<div class="sd-win">+'+d.pot+'</div>':'');
       var cr=document.createElement('div');cr.className='sd-cards-row';p.cards.forEach(function(c){cr.appendChild(mkCard(c,false,false));});div.appendChild(cr);cont.appendChild(div);
       var delay=d.board?d.board.length*220+600:600;
       [].slice.call(cr.querySelectorAll('.card')).forEach(function(el,i){setTimeout(function(){el.classList.add('flipped');},delay+i*280);});
     });
-    folded.forEach(function(p){var div=document.createElement('div');div.className='sd-player';div.style.opacity='.45';div.innerHTML='<div class="sd-av">'+(p.av||'🎴')+'</div><div class="sd-pname">'+p.name+'</div><div class="sd-folded">Folded</div>';cont.appendChild(div);});
+    folded.forEach(function(p){var div=document.createElement('div');div.className='sd-player';div.style.opacity='.45';div.innerHTML='<div class="sd-av">'+G._avMono(p)+'</div><div class="sd-pname">'+p.name+'</div><div class="sd-folded">Folded</div>';cont.appendChild(div);});
     $('sdovl').classList.add('show');
     // win/lose sound — did I win?
     if(d.winnerId===this.myId)SFX.win();else SFX.lose();
@@ -1498,7 +1508,7 @@ var G={
     var totalHands=(me&&me.st&&me.st.hands)||c.handsPlayed||0;
     var winRate=totalHands>0?Math.round(handsWon/totalHands*100):0;
     var bp=c.biggestPot||0;
-    var avHtml=this.myImg?'<img src="'+this.myImg+'">':'<span>'+(this.myAv||'🤵')+'</span>';
+    var avHtml=this.myImg?'<img src="'+this.myImg+'">':'<span class="mono">'+((this.nick()||'').replace(/[^A-Za-zА-Яа-я0-9]/g,'').charAt(0).toUpperCase()||'?')+'</span>';
     var luckyHtml='';
     if(c.luckyHand&&c.luckyHand.length===2){
       luckyHtml='<div class="lucky-cards"></div>';
@@ -1584,7 +1594,7 @@ var G={
       try{if(window.Notification&&Notification.permission==='granted'){new Notification('SIBSTRIN Fold',{body:'Your turn to act!'});}}catch(e){}
       var orig=document.title,on=true;
       if(this._titleInt)clearInterval(this._titleInt);
-      this._titleInt=setInterval(function(){document.title=on?'⚡ YOUR TURN':'SIBSTRIN Fold';on=!on;},700);
+      this._titleInt=setInterval(function(){document.title=on?'YOUR TURN':'SIBSTRIN Fold';on=!on;},700);
       var stop=function(){if(G._titleInt){clearInterval(G._titleInt);G._titleInt=null;document.title='SIBSTRIN Fold';}document.removeEventListener('visibilitychange',stop);};
       document.addEventListener('visibilitychange',stop);
     }
@@ -1599,8 +1609,7 @@ var G={
   renderLB:function(){
     var body=$('lb-body');var arr=[];for(var k in this.wk)arr.push(this.wk[k]);arr.sort(function(a,b){return b.chips-a.chips;});
     if(!arr.length){body.innerHTML='<div style="text-align:center;padding:2rem;color:var(--txt-dim);font-size:.8rem">No data yet</div>';return;}
-    var m=['🥇','🥈','🥉'];
-    body.innerHTML=arr.map(function(p,i){return'<div class="lbrow"><div class="lbrank">'+(i<3?m[i]:'#'+(i+1))+'</div><div class="lbav">'+(p.av||'🎴')+'</div><div class="lbinfo"><div class="lbn">'+p.name+'</div><div class="lbb">Wins: '+p.wins+'</div></div><div class="lbst">'+p.chips.toLocaleString()+'<small>chips</small></div></div>';}).join('');
+    body.innerHTML=arr.map(function(p,i){return'<div class="lbrow"><div class="lbrank">#'+(i+1)+'</div><div class="lbav">'+G._avMono(p)+'</div><div class="lbinfo"><div class="lbn">'+p.name+'</div><div class="lbb">Wins: '+p.wins+'</div></div><div class="lbst">'+p.chips.toLocaleString()+'<small>chips</small></div></div>';}).join('');
   },
 
   _showActionAnim:function(pi,text,atype){
@@ -1651,10 +1660,10 @@ var G={
     return positions;
   },
   _buildSeat:function(p,isD,isA,masked){
-    var b=getBadge(p),tr=getTrophy(p);
+    var tr=getTrophy(p);
     var div=document.createElement('div');
     div.className='seat'+(isA?' active':'')+(p.folded?' folded':'')+(p.busted?' busted':'');
-    var avH=p.img?'<img src="'+p.img+'" alt="">':'<span>'+(p.av||'🎴')+'</span>';
+    var avH=this._avInner(p);
     var ring=document.createElement('div');ring.className='seat-av-ring';
     ring.innerHTML='<div class="seat-av">'+avH+'</div>'+(isD?'<div class="dbn">D</div>':'');
     div.appendChild(ring);
@@ -1662,7 +1671,8 @@ var G={
     var pres=(this.presence&&this.presence[p.id])||null;var statusHtml='';
     if(p.id!==this.myId){if(p.disconnected)statusHtml='<span class="pstatus off">● offline</span>';else if(pres&&pres.online){var ping=pres.ping||0;var cls=ping<150?'good':ping<400?'mid':'bad';statusHtml='<span class="pstatus '+cls+'">● '+(ping>0?ping+'ms':'online')+'</span>';}}
     var plate=document.createElement('div');plate.className='seat-plate';
-    plate.innerHTML='<div class="seat-name">'+(tr?tr+' ':'')+p.name+(p.busted?' 💀':'')+'</div>'+(!p.busted?'<div class="seat-chips">'+(p.chips||0).toLocaleString()+'</div>':'')+statusHtml;
+    var tag=p.bot?'<span class="seat-cpu">CPU</span>':'';
+    plate.innerHTML='<div class="seat-name">'+(tr?tr+' ':'')+p.name+tag+'</div>'+(!p.busted?'<div class="seat-chips">'+(p.chips||0).toLocaleString()+'</div>':'<div class="seat-out">OUT</div>')+statusHtml;
     div.appendChild(plate);
     // blind label
     var gi=this.pl.indexOf(p);
@@ -1700,7 +1710,7 @@ var G={
       var hole=document.createElement('div');hole.className='me-hole';
       me.cards.forEach(function(c){hole.appendChild(mkCard(c&&!c.h?c:null,false,c&&!c.h));});
       row.appendChild(hole);
-      if(this.board.length>=3&&!me.folded){try{var ev=evalHand(me.cards,this.board);var hint=document.createElement('div');hint.className='hand-hint';hint.textContent='✨ '+ev.name;row.appendChild(hint);}catch(e){}}
+      if(this.board.length>=3&&!me.folded){try{var ev=evalHand(me.cards,this.board);var hint=document.createElement('div');hint.className='hand-hint';hint.textContent=ev.name;row.appendChild(hint);}catch(e){}}
     }
   },
   renderBoardStatic:function(){
