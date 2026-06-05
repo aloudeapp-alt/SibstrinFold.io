@@ -384,7 +384,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v76</div>
+<div class="ver">SIBSTRIN FOLD · v77</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -1482,12 +1482,15 @@ var G={
     if(d.board&&d.board.length){d.board.forEach(function(c,i){var el=mkCard(c,false,false);sb.appendChild(el);setTimeout(function(){el.classList.add('flipped');},200+i*200);});}
     else sb.innerHTML='<div style="font-size:.7rem;color:var(--txt-dim)">No board</div>';
     var cont=$('sd-players');cont.innerHTML='';
-    var showable=d.pl.filter(function(p){return !p.folded&&!p.busted&&p.cards&&p.cards.length===2&&!p.cards[0].h;});
-    var folded=d.pl.filter(function(p){return p.folded&&!p.busted;});
+    // Anyone who reached showdown with two real (unmasked) cards is shown —
+    // including a player who just lost their last chips this hand (busted).
+    var showable=d.pl.filter(function(p){return !p.folded&&p.cards&&p.cards.length===2&&!p.cards[0].h;});
+    var folded=d.pl.filter(function(p){return p.folded&&p.cards&&p.cards.length>=2;});
     showable.forEach(function(p){
-      var isWin=p.id===d.winnerId;var ev=null;try{ev=p.cards&&p.cards.length===2&&d.board&&d.board.length>=3?evalHand(p.cards,d.board):null;}catch(e){}
+      var isWin=p.id===d.winnerId||(d.winners&&d.winners[p.id]>0);var ev=null;try{ev=p.cards&&p.cards.length===2&&d.board&&d.board.length>=3?evalHand(p.cards,d.board):null;}catch(e){}
       var div=document.createElement('div');div.className='sd-player'+(isWin?' winner':'');
-      div.innerHTML='<div class="sd-av">'+G._avMono(p)+'</div><div class="sd-pname">'+p.name+'</div>'+(ev?'<div class="sd-hand">'+ev.name+'</div>':'')+(isWin?'<div class="sd-win">+'+d.pot+'</div>':'');
+      var winAmt=(d.winners&&d.winners[p.id])||(p.id===d.winnerId?d.pot:0);
+      div.innerHTML='<div class="sd-av">'+G._avMono(p)+'</div><div class="sd-pname">'+p.name+'</div>'+(ev?'<div class="sd-hand">'+ev.name+'</div>':'')+(isWin?'<div class="sd-win">+'+winAmt+'</div>':'');
       var cr=document.createElement('div');cr.className='sd-cards-row';p.cards.forEach(function(c){cr.appendChild(mkCard(c,false,false));});div.appendChild(cr);cont.appendChild(div);
       var delay=d.board?d.board.length*220+600:600;
       [].slice.call(cr.querySelectorAll('.card')).forEach(function(el,i){setTimeout(function(){el.classList.add('flipped');},delay+i*280);});
