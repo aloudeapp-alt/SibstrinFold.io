@@ -120,18 +120,18 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
   border:2px solid rgba(0,0,0,.3);
 }
 /* center logo watermark */
-.felt-logo{position:absolute;top:54%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;opacity:.5}
+.felt-logo{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;opacity:.4;z-index:1}
 .felt-logo .fl-crown{font-size:1.6rem;color:rgba(212,175,55,.5);line-height:1}
 .felt-logo .fl-1{font-size:1.5rem;letter-spacing:7px;color:rgba(212,175,55,.45);font-weight:400;line-height:1.2}
 .felt-logo .fl-2{font-size:1.1rem;letter-spacing:9px;color:rgba(212,175,55,.35);font-weight:400}
 
-.phase-lbl{position:absolute;top:20%;left:50%;transform:translateX(-50%);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--txt-dim);z-index:14;pointer-events:none;text-align:center;font-family:'Segoe UI',sans-serif}
-.phase-lbl b{display:block;font-size:.9rem;color:var(--gold);letter-spacing:4px;margin-top:2px;font-weight:400}
+.phase-lbl{position:absolute;top:55%;left:50%;transform:translateX(-50%);font-size:.58rem;letter-spacing:3px;text-transform:uppercase;color:var(--txt-dim);z-index:16;pointer-events:none;text-align:center;font-family:'Segoe UI',sans-serif}
+.phase-lbl b{display:inline-block;font-size:.82rem;color:var(--gold);letter-spacing:4px;font-weight:400}
 
 .seats-cont{position:absolute;inset:0}
 
-/* pot */
-.pot-wrap{position:absolute;top:30%;left:50%;transform:translateX(-50%);text-align:center;z-index:15}
+/* pot — placed below the community cards (under the SIBSTRIN/FOLD logo) so the top of the table isn't crowded */
+.pot-wrap{position:absolute;top:63%;left:50%;transform:translateX(-50%);text-align:center;z-index:15}
 .pot-lbl{font-size:.58rem;color:var(--txt-dim);letter-spacing:3px;text-transform:uppercase;font-family:'Segoe UI',sans-serif}
 .pot-amt{font-size:1.35rem;color:var(--gold);font-weight:700;line-height:1.1}
 
@@ -179,6 +179,8 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 .seat-badge{font-size:.46rem;color:var(--gold-dk);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
 /* action label above seat */
 .atag{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:rgba(10,8,5,.95);border:1px solid var(--gold);border-radius:7px;padding:1px 8px;font-size:.58rem;white-space:nowrap;color:var(--gold);z-index:25;font-family:'Segoe UI',sans-serif}
+/* chip flying to the pot — fixed to viewport so its rect coords match getBoundingClientRect, never affects layout */
+.fly-chip{position:fixed;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#e84030,#a02018);border:2px dashed rgba(255,255,255,.55);z-index:300;pointer-events:none;transition:transform .6s ease-in,opacity .6s ease-in;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 /* blind chip + bet (placed toward center) */
 .seat-bet{position:absolute;font-size:.62rem;color:var(--gold);font-weight:700;background:rgba(10,8,5,.9);border:1px solid var(--gold-dk);border-radius:12px;padding:1px 7px;white-space:nowrap;display:flex;align-items:center;gap:3px;font-family:'Segoe UI',sans-serif;z-index:22}
 .bet-chip-ic{width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#e84030,#a02018);border:1.5px dashed rgba(255,255,255,.5);flex-shrink:0}
@@ -384,7 +386,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<div class="ver">SIBSTRIN FOLD · v79</div>
+<div class="ver">SIBSTRIN FOLD · v83</div>
 
 <!-- LOBBY -->
 <div id="s-lobby" class="screen active">
@@ -510,7 +512,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--bg);color:va
               <div class="felt-logo"><div class="fl-crown">♛</div><div class="fl-1">SIBSTRIN</div><div class="fl-2">FOLD</div></div>
               <div class="seats-cont" id="sc"></div>
               <div class="pot-wrap"><div class="pot-lbl">POT</div><div class="pot-amt" id="pot-amt">0</div></div>
-              <div class="phase-lbl" id="plbl">ROUND<b>PREFLOP</b></div>
+              <div class="phase-lbl" id="plbl"><b>PREFLOP</b></div>
               <div class="community"><div class="cc" id="cc"></div></div>
             </div>
           </div>
@@ -1691,15 +1693,14 @@ var G={
     if(!this.pl.length)return;
     this.renderOthers();this.renderMe();this.renderBoardStatic();this.renderControls();
     $('pot-amt').textContent=this.pot.toLocaleString();
-    $('plbl').innerHTML='ROUND<b>'+this.phase.toUpperCase()+'</b>';
+    $('plbl').innerHTML='<b>'+this.phase.toUpperCase()+'</b>';
   },
   seatPos:function(count){
     var positions=[];
-    var cx=50,cy=46;
-    // Distribute around the oval, leaving the bottom-center open for the local player.
-    // Angles sweep from just past bottom-left, over the top, to just past bottom-right.
-    // Use a wider radius so seats hug the rail and never stack in the middle.
-    var rx=46,ry=40;
+    // Center pushed down + smaller vertical radius so the top seats sit lower
+    // and their avatar rings don't get clipped by the header/menu bar above the felt.
+    var cx=50,cy=50;
+    var rx=46,ry=36;
     var start=Math.PI*0.86;   // bottom-left area
     var end=Math.PI*2.14;     // bottom-right area (wraps over the top)
     for(var i=0;i<count;i++){
